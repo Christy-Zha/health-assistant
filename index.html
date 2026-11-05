@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="健康小助手">
@@ -151,6 +151,9 @@ nav button.on{color:var(--acc)}
 .stp.wide button{white-space:nowrap;width:auto;min-width:44px;padding:0 10px;font-size:15px}.stp.wide b{white-space:nowrap;min-width:64px;text-align:center}
 .wkdots{display:flex;justify-content:space-between;align-items:center;margin:-4px 20px 4px;font-size:13px;color:var(--sub)}
 .dots{display:flex;gap:6px}.dots i{width:9px;height:9px;border-radius:50%;background:var(--fill)}.dots i.on{background:var(--acc)}.dots i.cur{outline:1.5px solid var(--sub);outline-offset:2px}
+html,body{touch-action:manipulation;overflow-x:hidden;max-width:100%}
+button,a,summary,label,.chip,.pb,.sw,.stp,.tk,nav button{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,select{font-size:16px!important}
 
 </style>
 </head>
@@ -965,10 +968,11 @@ function render(){
  if(tab==='today'&&sheet){const t=DOM.find(x=>x.k===sheet)||{n:'姿势时间'};hd=`<div><button class="back" data-act="back">${ic('back',22)}${isT?'今天':md(cur)}</button><h1>${t.n}</h1></div>`}
  else if(tab==='today'){hd=`<div><div class="sub">${md(cur)} ${wday(cur)}</div><h1>${isT?'今天':wday(cur)}</h1></div><div class="dnav"><button data-act="day" data-v="-1" aria-label="前一天">${ic('back',18)}</button>${isT?'':'<button class="today-btn" data-act="gotoday">今天</button>'}<button data-act="day" data-v="1" aria-label="后一天" ${isT?'disabled style="opacity:.3"':''}>${ic('chev',18)}</button></div>`}
  else hd=`<div><h1>${TITLES[tab]}</h1></div>`;
+ const sy=window.scrollY;
  document.getElementById('hdr').innerHTML=hd;
  document.getElementById('app').innerHTML={today:renderToday,plan:renderPlan,trend:renderTrend,spine:renderSpine,me:renderMe}[tab]();
  document.getElementById('nav').innerHTML=NAV.filter(n=>n[0]!=='spine'||S.mods.spine).map(([k,n,i])=>`<button data-tab="${k}" class="${tab===k?'on':''}">${ic(i,24)}<span>${n}</span></button>`).join('');
- tickTimer()}
+ window.scrollTo(0,sy);tickTimer()}
 
 function beep(){try{const c=new(window.AudioContext||window.webkitAudioContext)();[0,.35].forEach(t=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=880;g.gain.value=.2;o.connect(g);g.connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+.2)})}catch(e){}}
 function tickTimer(){
@@ -1082,6 +1086,7 @@ document.getElementById('imp').addEventListener('change',e=>{
   if(!confirm('导入会覆盖当前数据，确定吗？'))return;S=Object.assign(blank(),o);migrate();save();render();toast('导入成功')}catch(_){alert('文件格式不对，请选择本工具导出的备份文件')}
   e.target.value=''};r.readAsText(f)});
 
+['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
 posInit();render();
 
 </script>
