@@ -227,12 +227,12 @@ const GEN_STOP='训练中或训练后出现腿部放射痛加重、麻木范围�
 
 /* —— 营养均衡：七类食物（按膳食宝塔）—— */
 const GROUPS=[
-{k:'grain',n:'谷薯',unit:'1 份 ≈ 一拳米饭 / 一个馒头 / 一小个红薯',lo:4,hi:6,role:'提供能量、B 族维生素和膳食纤维。主食里要有一部分全谷物和杂豆。',eg:'杂粮饭、全麦面包、燕麦、玉米、红薯、山药'},
-{k:'veg',n:'蔬菜',unit:'1 份 ≈ 一捧生菜 / 半碗熟菜（约 100 g）',lo:3,hi:5,role:'提供维生素 C、钾和膳食纤维。深色蔬菜（深绿、橙红、紫）应占一半以上。',eg:'菠菜、西兰花、油麦菜、胡萝卜、番茄、紫甘蓝、菌菇'},
-{k:'fruit',n:'水果',unit:'1 份 ≈ 一个拳头大（约 100–150 g）',lo:2,hi:3,role:'提供维生素 C、钾和果胶。不要用果汁代替整个水果。',eg:'苹果、橙子、猕猴桃、蓝莓、香蕉'},
-{k:'prot',n:'鱼禽蛋肉',unit:'1 份 ≈ 半个手掌大（约 50 g）/ 一个鸡蛋 / 6–8 只虾',lo:3,hi:4,role:'提供优质蛋白、铁、锌和维生素 B12。鱼每周至少 2 次，蛋每天 1 个。',eg:'鱼、虾、鸡蛋、鸡胸、瘦牛肉、瘦猪肉'},
-{k:'milk',n:'奶类',unit:'1 份 ≈ 一杯牛奶（250 ml）/ 一杯无糖酸奶',lo:1,hi:2,role:'提供钙和优质蛋白，对骨骼和肌肉的恢复都有用。',eg:'牛奶、无糖酸奶、奶酪'},
-{k:'soy',n:'豆类和坚果',unit:'1 份 ≈ 一块豆腐 / 一杯无糖豆浆 / 一小把坚果',lo:1,hi:2,role:'提供植物蛋白、不饱和脂肪和镁。坚果一天一小把就够，别多。',eg:'豆腐、豆浆、豆干、核桃、杏仁、花生'}];
+{k:'grain',n:'谷薯',gram:'50 g/份',unit:'1 份 ≈ 生重 50 g（煮成熟米饭约 120 g · 馒头约 80 g · 红薯约 150 g）',lo:4,hi:6,role:'提供能量、B 族维生素和膳食纤维。主食里要有一部分全谷物和杂豆。',eg:'杂粮饭、全麦面包、燕麦、玉米、红薯、山药'},
+{k:'veg',n:'蔬菜',gram:'100 g/份',unit:'1 份 ≈ 生重 100 g（炒熟后约半碗；生菜约一大捧）',lo:3,hi:5,role:'提供维生素 C、钾和膳食纤维。深色蔬菜（深绿、橙红、紫）应占一半以上。',eg:'菠菜、西兰花、油麦菜、胡萝卜、番茄、紫甘蓝、菌菇'},
+{k:'fruit',n:'水果',gram:'125 g/份',unit:'1 份 ≈ 125 g 可食部分（约一个拳头大；中等苹果 1 个约 1.5 份）',lo:2,hi:3,role:'提供维生素 C、钾和果胶。不要用果汁代替整个水果。',eg:'苹果、橙子、猕猴桃、蓝莓、香蕉'},
+{k:'prot',n:'鱼禽蛋肉',gram:'50 g/份',unit:'1 份 ≈ 生重 50 g（半个手掌大；或鸡蛋 1 个；虾 6–8 只）',lo:3,hi:4,role:'提供优质蛋白、铁、锌和维生素 B12。鱼每周至少 2 次，蛋每天 1 个。',eg:'鱼、虾、鸡蛋、鸡胸、瘦牛肉、瘦猪肉'},
+{k:'milk',n:'奶类',gram:'250 ml/份',unit:'1 份 ≈ 牛奶 250 ml（或无糖酸奶 150 g；奶酪 25 g）',lo:1,hi:2,role:'提供钙和优质蛋白，对骨骼和肌肉的恢复都有用。',eg:'牛奶、无糖酸奶、奶酪'},
+{k:'soy',n:'豆类和坚果',gram:'约 100 g 豆腐/份',unit:'1 份 ≈ 豆腐 100 g（或豆浆 250 ml；豆干 50 g；坚果 10 g，核桃仁 2–3 块）',lo:1,hi:2,role:'提供植物蛋白、不饱和脂肪和镁。坚果一天一小把就够，别多。',eg:'豆腐、豆浆、豆干、核桃、杏仁、花生'}];
 const ITEMS=[
  {k:'grain',n:'谷薯',ok:t=>t.sv.grain>=4},
  {k:'whole',n:'全谷物和杂豆',ok:t=>!!t.whole},
@@ -408,8 +408,8 @@ const FOOD_PROT=[['鸡蛋 1 个（约 50 g）','6 g'],['牛奶 250 ml','8 g'],['
 const FOOD_REF=[['蔬菜','300–500 g（深色占一半以上）'],['水果','200–350 g'],['谷类','200–300 g（含全谷物、杂豆 50–150 g）'],['薯类','50–100 g'],['鱼、禽、蛋、瘦肉合计','120–200 g；鱼每周 ≥2 次；蛋每天 1 个'],['奶及奶制品','300–500 g'],['大豆及坚果','25–35 g'],['烹调油 / 盐','油 25–30 g；盐 <5 g'],['饮水','1500–1700 ml（约 7–8 杯）'],['食物种类','平均每天 12 种以上，每周 25 种以上'],['酒','不饮或少饮；若饮，酒精不超过 15 g/天']];
 const MEAL_OPT=[
  ['早餐（三选一轮换）',['无糖豆浆或牛奶 + 全麦面包 / 杂粮馒头 + 水煮蛋 + 黄瓜或小番茄','牛奶煮燕麦 + 一小把坚果 + 水果 + 蛋','杂粮粥 + 豆腐或鸡蛋 + 凉拌蔬菜']],
- ['午餐（先吃菜，再吃肉，最后吃主食）',['一拳杂粮饭 + 半个手掌大的蛋白质 ×2（鸡胸 / 鱼 / 虾 / 豆腐 / 瘦牛肉）+ 两捧蔬菜（绿叶菜为主）','汤面类：选清汤，加一份蛋白质和一份青菜，少喝汤']],
- ['晚餐（尽量 19 点前，清淡）',['同午餐结构，主食约午餐的 2/3','蒸煮炖为主，少油少盐']],
+ ['午餐（先吃菜，再吃肉，最后吃主食）',['杂粮饭（熟）240 g + 肉蛋豆合计约 50 g 生重（鸡胸 / 鱼 / 虾 / 豆腐 / 瘦牛肉）+ 蔬菜约 200 g（绿叶菜为主）','汤面类：选清汤，加一份蛋白质和一份青菜，少喝汤']],
+ ['晚餐（尽量 19 点前，清淡）',['同午餐结构，主食减半（熟饭约 120 g）','蒸煮炖为主，少油少盐']],
  ['加餐（饿了再吃）',['无糖酸奶 / 一小把原味坚果 / 一个水果 / 一个水煮蛋']]];
 const WEEK_PLAN=[
  ['周一','杂粮饭 + 清炒鸡胸西兰花 + 凉拌黄瓜','小米南瓜粥 + 豆腐炖白菜 + 水煮蛋'],
@@ -481,7 +481,7 @@ function weekSet(d){const w=weekNo(d),P=prefs(),v=P.veg;
 function menuFor(d){const W=weekSet(d),i=(parse(d).getDay()+6)%7;
  if(i===6)return{b:W.b,l:FREE,d:FREE,s:W.s,free:1,fish:false};
  const k=['A','A','B','B','C','C'][i],x=W[k],noRice=/不用再配饭/.test(x[1]);
- return{b:W.b,l:x[0]+(noRice?'':' + 杂粮饭 1 拳'),d:x[0]+(noRice?'':' + 杂粮饭小半碗'),s:W.s,fish:k==='A'&&!prefs().veg&&!prefs().nofish,batch:k,how:x[1]}}
+ return{b:W.b,l:x[0]+(noRice?'':' + 杂粮饭（熟）240 g')+' · 菜约 200 g · 肉蛋豆约 50 g',d:x[0]+(noRice?'':' + 杂粮饭（熟）120 g')+' · 菜约 200 g · 肉蛋豆约 50 g',s:W.s,fish:k==='A'&&!prefs().veg&&!prefs().nofish,batch:k,how:x[1]}}
 function menuHasFish(m){return !!m.fish}
 const menuNote=()=>'一道菜一次做 2 天的量，冷藏，吃前加热透，第 2 天内吃完。杂粮饭一次煮 6 份，分袋冷冻，吃前微波。每周三道菜、早餐和加餐都会换。'+(prefs().veg||prefs().nofish?'':'每周有 2 天吃鱼虾。')+(prefs().veg?'素食要留意维生素 B12 和铁，是否需要补充请问医生。':'')+(prefs().nomilk?'不喝奶时，钙要从豆腐、深绿叶菜、钙强化豆浆里补，是否需要补钙请问医生。':'')+'有过敏、忌口或疾病请自行替换同类食物，并遵医嘱。';
 const MEAL_N=[['b','早餐'],['l','午餐'],['d','晚餐'],['s','加餐']];
@@ -587,15 +587,15 @@ function planDiet(){
  <div class="mrow"><b>加餐</b><span>${esc(W.s)}<br><small class="hint">整周固定</small></span></div>
  <p class="hint" style="margin-top:8px">${menuNote()}</p></section>`;
  h+=`<section class="card"><h2>每日参考量</h2><p class="hint" style="margin-bottom:4px">参考《中国居民膳食指南（2022）》，成人，生重</p>${FOOD_REF.map(([a,b])=>`<div class="stat"><span>${a}</span><b>${b}</b></div>`).join('')}</section>`;
- h+=`<section class="card"><h2>一份是多少</h2><p class="hint" style="margin-bottom:6px">「今日」页按“份”记。点开看每份多少、吃什么。</p>${GROUPS.map(g=>det('g-'+g.k,`<span>${g.n}</span><span class="tags"><span class="tag">${g.lo}${g.hi>g.lo?'–'+g.hi:''} 份/天</span></span>`,`<h4>1 份是多少</h4><p>${esc(g.unit)}</p><h4>常见食物</h4><p>${esc(g.eg)}</p><h4>作用</h4><p>${esc(g.role)}</p>`)).join('')}<p class="hint" style="margin-top:8px">另外还有三项：主食里有全谷物和杂豆、一半蔬菜是深色的、一天吃够 12 种以上不同的食物。</p></section>`;
+ h+=`<section class="card"><h2>一份是多少</h2><p class="hint" style="margin-bottom:6px">「今日」页按“份”记。点开看每份多少、吃什么。所有克数都按<b>生重、可食部分</b>算；熟的、带皮带骨的，按下面的速查表折算。</p>${GROUPS.map(g=>det('g-'+g.k,`<span>${g.n}</span><span class="tags"><span class="tag">${g.lo}${g.hi>g.lo?'–'+g.hi:''} 份/天</span><span class="tag">${g.gram}</span></span>`,`<h4>1 份是多少</h4><p>${esc(g.unit)}</p><h4>常见食物</h4><p>${esc(g.eg)}</p><h4>作用</h4><p>${esc(g.role)}</p>`)).join('')}<p class="hint" style="margin-top:8px">另外还有三项：主食里有全谷物和杂豆、一半蔬菜是深色的、一天吃够 12 种以上不同的食物。</p></section>`;
  h+=`<section class="card"><h2>重要的营养素</h2>${NUTR.map(([a,b])=>det('n'+a,`<span>${a}</span>`,`<p>${esc(b)}</p>`)).join('')}<p class="hint" style="margin-top:8px">保健品和补剂请先问医生，不要自己加量。</p></section>`;
  h+=`<section class="card"><h2>速查：称重换算成份</h2><p class="hint" style="margin-bottom:6px">用薄荷健康 App 或语音秤称出克数后，对着下表换成“份”，记到「今日」页就行。营养素含量以秤和 App 的结果为准，小助手只记几份。</p>
- <div class="stat"><span>谷薯 1 份</span><b>熟米饭约 130 g · 馒头约 80 g · 红薯约 150 g</b></div>
- <div class="stat"><span>蔬菜 1 份</span><b>生重约 100 g</b></div>
- <div class="stat"><span>水果 1 份</span><b>约 100–150 g</b></div>
- <div class="stat"><span>鱼禽蛋肉 1 份</span><b>生重约 50 g · 鸡蛋 1 个</b></div>
- <div class="stat"><span>奶类 1 份</span><b>牛奶 250 ml · 无糖酸奶 150–200 g</b></div>
- <div class="stat"><span>豆类和坚果 1 份</span><b>豆腐约 100 g · 豆浆 250 ml · 坚果约 10 g</b></div>
+ <div class="stat"><span>谷薯 1 份</span><b>生重 50 g（熟米饭约 120 g · 馒头约 80 g · 红薯约 150 g）</b></div>
+ <div class="stat"><span>蔬菜 1 份</span><b>生重 100 g（炒熟约半碗）</b></div>
+ <div class="stat"><span>水果 1 份</span><b>125 g 可食部分</b></div>
+ <div class="stat"><span>鱼禽蛋肉 1 份</span><b>生重 50 g · 鸡蛋 1 个 · 虾 6–8 只</b></div>
+ <div class="stat"><span>奶类 1 份</span><b>牛奶 250 ml · 无糖酸奶 150 g · 奶酪 25 g</b></div>
+ <div class="stat"><span>豆类和坚果 1 份</span><b>豆腐 100 g · 豆浆 250 ml · 豆干 50 g · 坚果 10 g</b></div>
  <p class="hint" style="margin-top:8px">熟肉比生肉轻，约少四分之一；秤称熟重时，肉类按“熟重 × 1.3”折回生重再换算。</p></section>`;
  h+=`<section class="card"><h2>蛋白质速查</h2><p class="hint" style="margin-bottom:4px">约值</p>${FOOD_PROT.map(([a,b])=>`<div class="stat"><span>${a}</span><b>${b}</b></div>`).join('')}</section>`;
  h+=`<section class="card"><h2>尽量少吃</h2>${ul(SKIP)}</section>`;
@@ -611,7 +611,7 @@ function renderPlan(){
 </script>
 <script>
 const KEY='lumbarHelper.v1';
-const APP_VER='2026-11-05i';
+const APP_VER='2026-11-05j';
 const QA=['请检查并记录：右侧踝跖屈和踮脚的肌力、跟腱反射、感觉和步态，是否提示 S1 神经根损害？','右脚无力是否需要加急脊柱外科评估？要不要复查 MRI 或做其他检查？','现在适合只做门诊康复吗？建议住院的医学原因是什么？','哪些动作可以做、哪些暂缓？坐、站、走、休息各多长合适？','止痛药怎么安排？药名、剂量、疗程、胃肠副作用。','病休多久，什么时候复诊，什么条件下逐步复工？','MRI 里“腰 5 后移”和“腰 4 不稳”具体指哪一节？要不要拍动态片？'];
 const LEGP=['正常','有点软','明显发软'];
 const LOCS=['不痛','仅腰部','到臀部','到大腿','到小腿/脚'];
