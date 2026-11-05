@@ -193,6 +193,14 @@ body::before{content:"";position:absolute;left:0;right:0;top:0;height:340px;z-in
 .pb[data-v=walk].on,.pb[data-v=lie].on{color:#26231f}.pb[data-v=walk].on small,.pb[data-v=lie].on small{color:rgba(38,35,31,.72)}
 @media (prefers-color-scheme:dark){.pb[data-v=walk].on,.pb[data-v=lie].on{color:#1a1410}}
 
+/* data-attr colors (no inline style) */
+.ico[data-c=c-sleep]{--ic:var(--c-sleep)}[data-bg=sleep]{background:var(--c-sleep)}[data-fg=sleep]{color:var(--c-sleep)}
+.ico[data-c=c-food]{--ic:var(--c-food)}[data-bg=food]{background:var(--c-food)}[data-fg=food]{color:var(--c-food)}
+.ico[data-c=c-move]{--ic:var(--c-move)}[data-bg=move]{background:var(--c-move)}[data-fg=move]{color:var(--c-move)}
+.ico[data-c=c-mood]{--ic:var(--c-mood)}[data-bg=mood]{background:var(--c-mood)}[data-fg=mood]{color:var(--c-mood)}
+.ico[data-c=c-spine]{--ic:var(--c-spine)}[data-bg=spine]{background:var(--c-spine)}[data-fg=spine]{color:var(--c-spine)}
+.ico[data-c=acc]{--ic:var(--acc)}
+
 </style>
 </head>
 <body>
@@ -597,7 +605,7 @@ function renderPlan(){
 </script>
 <script>
 const KEY='lumbarHelper.v1';
-const APP_VER='2026-11-05f';
+const APP_VER='2026-11-05g';
 const QA=['请检查并记录：右侧踝跖屈和踮脚的肌力、跟腱反射、感觉和步态，是否提示 S1 神经根损害？','右脚无力是否需要加急脊柱外科评估？要不要复查 MRI 或做其他检查？','现在适合只做门诊康复吗？建议住院的医学原因是什么？','哪些动作可以做、哪些暂缓？坐、站、走、休息各多长合适？','止痛药怎么安排？药名、剂量、疗程、胃肠副作用。','病休多久，什么时候复诊，什么条件下逐步复工？','MRI 里“腰 5 后移”和“腰 4 不稳”具体指哪一节？要不要拍动态片？'];
 const LEGP=['正常','有点软','明显发软'];
 const LOCS=['不痛','仅腰部','到臀部','到大腿','到小腿/脚'];
@@ -749,7 +757,7 @@ function postureSheet(d){const sp=S.mods.spine,capH=S.sitCap/60;
  const trk=Object.values(sec).reduce((a,b)=>a+b,0),rest=Math.max(0,86400-sl-trk),col={sit:'--c-spine',stand:'--c-food',walk:'--c-move',lie:'--c-mood'};
  const seg=(v,c)=>v>0?`<i style="flex:${v};background:var(${c})"></i>`:'';
  let h=`<section class="card"><h3>这一天的 24 小时</h3><div class="stack">${seg(sl,'--c-sleep')}${POS.map(([k])=>seg(sec[k],col[k])).join('')}</div>
- <div class="legend"><span><i style="background:var(--c-sleep)"></i>睡 ${fmtShort(sl)}</span>${POS.map(([k,n])=>`<span><i style="background:var(${col[k]})"></i>${n} ${fmtShort(sec[k])}</span>`).join('')}<span><i style="background:var(--fill)"></i>未记录 ${fmtShort(rest)}</span></div></section>`;
+ <div class="legend"><span><i data-bg="sleep"></i>睡 ${fmtShort(sl)}</span>${POS.map(([k,n])=>`<span><i style="background:var(${col[k]})"></i>${n} ${fmtShort(sec[k])}</span>`).join('')}<span><i style="background:var(--fill)"></i>未记录 ${fmtShort(rest)}</span></div></section>`;
  h+=`<section class="card"><h3>建议怎么分配</h3>
  <div class="stat"><span>睡觉</span><b>7–8 小时</b></div>`+(sp?`
  <div class="stat"><span>连续直立<br><small class="hint">坐 + 站 + 走</small></span><b>不超过 ${S.tol} 分钟<br>到 ${Math.round(S.tol*.8)} 分钟提醒你躺下</b></div>
@@ -778,7 +786,7 @@ function todoBanner(d){if(S.quiet||cur!==today()||sheet||S.nudge===today()||new 
  if(!m.length)return'';
  return `<section class="group due"><div class="rowi"><div class="rt"><b>今天还差：${m.map(x=>x[1]).join('、')}</b><div class="hint">一分钟就能记完</div></div><button class="btn sm" data-act="open" data-v="${m[0][0]}">去记</button><button class="btn sm ghost" data-act="nudge">不用了</button></div></section>`}
 function rowHtml(x,d,cls=''){const[t,done]=domSum(x.k,d);
- return `<button class="rowi ${cls}" data-act="open" data-v="${x.k}"><span class="ico" style="--ic:var(${x.c})">${ic(x.i)}</span><span class="rt"><b>${x.n}</b><small>${esc(t)}</small></span>${done?`<span class="dn">${ic('check',18)}</span>`:''}<span class="chev">${ic('chev',16)}</span></button>`}
+ return `<button class="rowi ${cls}" data-act="open" data-v="${x.k}"><span class="ico" data-c="${x.c.slice(2)}">${ic(x.i)}</span><span class="rt"><b>${x.n}</b><small>${esc(t)}</small></span>${done?`<span class="dn">${ic('check',18)}</span>`:''}<span class="chev">${ic('chev',16)}</span></button>`}
 function onboardCard(){const P=S.prefs;
  return `<section class="card"><h2>先选几项，30 秒</h2><p class="hint" style="margin-bottom:12px">之后都能在「我的」里改。</p>
  <h3>目标</h3><div class="seg" style="margin-bottom:16px">${Object.entries(GOAL_N).map(([k,n])=>`<button data-act="goal" data-v="${k}" class="${S.goal===k?'on':''}">${n}</button>`).join('')}</div>
@@ -792,9 +800,9 @@ function renderHome(d){
  h+=backupBanner()||todoBanner(d);
  h+=postureRow();
  if(sh!=null||sc!=null||mv>0)h+=`<section class="card mini">${ring([{p:(sh||0)/8,c:'var(--c-sleep)'},{p:(sc||0)/10,c:'var(--c-food)'},{p:mv/30,c:'var(--c-move)'}])}
- <div class="leg3"><div><span style="color:var(--c-sleep)">睡眠</span><p><b>${sh==null?'—':f1(sh)}</b><u>小时</u></p></div>
- <div><span style="color:var(--c-food)">营养</span><p><b>${sc==null?'—':sc}</b><u>/ 10</u></p></div>
- <div><span style="color:var(--c-move)">运动</span><p><b>${mv||'—'}</b><u>分钟</u></p></div></div></section>`;
+ <div class="leg3"><div><span data-fg="sleep">睡眠</span><p><b>${sh==null?'—':f1(sh)}</b><u>小时</u></p></div>
+ <div><span data-fg="food">营养</span><p><b>${sc==null?'—':sc}</b><u>/ 10</u></p></div>
+ <div><span data-fg="move">运动</span><p><b>${mv||'—'}</b><u>分钟</u></p></div></div></section>`;
  h+=weekDots();
  const rows=DOM.filter(x=>!x.mod||S.mods[x.mod]);
  h+='<section class="group">'+rows.filter(x=>x.k!=='mood'&&x.k!=='tasks').map(x=>rowHtml(x,d)).join('')+'</section>';
@@ -922,12 +930,12 @@ function renderTrend(){
  h+=cardChart('营养均衡（满分 10）',`平均 ${f1(avg(A.dscore))} 分`,chart(days,[{v:days.map(d=>S.days[d]?dietScore(S.days[d]):null),c:'var(--c-food)'}],{max:10,bars:true,ticks:[[0,'0'],[5,'5'],[10,'10']]}));
  const mvs=days.map(d=>S.days[d]?moveMin(S.days[d])||null:null);
  h+=cardChart('运动（分钟）',`近 7 天共 ${a.mvTot} 分钟，目标 150–300`,chart(days,[{v:mvs,c:'var(--c-move)'}],{max:Math.max(60,...mvs.filter(v=>v))+0,bars:true}));
- h+=cardChart('精力 · 心情 · 压力','',chart(days,[{v:g('energy'),c:'var(--c-move)'},{v:g('mood'),c:'var(--c-mood)'},{v:g('stress'),c:'var(--sub)'}],{max:5,min:1,ticks:[[1,'1'],[3,'3'],[5,'5']]}),`<div class="legend"><span><i style="background:var(--c-move)"></i>精力</span><span><i style="background:var(--c-mood)"></i>心情</span><span><i style="background:var(--sub)"></i>压力</span></div>`);
+ h+=cardChart('精力 · 心情 · 压力','',chart(days,[{v:g('energy'),c:'var(--c-move)'},{v:g('mood'),c:'var(--c-mood)'},{v:g('stress'),c:'var(--sub)'}],{max:5,min:1,ticks:[[1,'1'],[3,'3'],[5,'5']]}),`<div class="legend"><span><i data-bg="move"></i>精力</span><span><i data-bg="mood"></i>心情</span><span><i style="background:var(--sub)"></i>压力</span></div>`);
  const wk=Object.keys(S.weekly).sort().filter(k=>+S.weekly[k].wt>0).slice(-12);
  if(wk.length>=2){const ws=wk.map(k=>+S.weekly[k].wt),mn=Math.floor(Math.min(...ws)-1),mx=Math.ceil(Math.max(...ws)+1);
   h+=cardChart('体重（kg，每周）',`最近 ${ws[ws.length-1]} kg`,chart(wk,[{v:ws,c:'var(--acc)'}],{max:mx,min:mn,ticks:[[mn,String(mn)],[(mn+mx)/2,f1((mn+mx)/2)],[mx,String(mx)]]}))}
  if(sp){
-  h+=cardChart('疼痛',`近 7 天早 ${f1(avg(a.am))} · 晚 ${f1(avg(a.pm))}`,chart(days,[{v:g('painAM'),c:'var(--c-spine)'},{v:g('painPM'),c:'var(--c-sleep)'}],{max:10,ticks:[[0,'0'],[3,'3'],[6,'6'],[10,'10']]}),`<div class="legend"><span><i style="background:var(--c-spine)"></i>早上</span><span><i style="background:var(--c-sleep)"></i>晚上</span></div>`);
+  h+=cardChart('疼痛',`近 7 天早 ${f1(avg(a.am))} · 晚 ${f1(avg(a.pm))}`,chart(days,[{v:g('painAM'),c:'var(--c-spine)'},{v:g('painPM'),c:'var(--c-sleep)'}],{max:10,ticks:[[0,'0'],[3,'3'],[6,'6'],[10,'10']]}),`<div class="legend"><span><i data-bg="spine"></i>早上</span><span><i data-bg="sleep"></i>晚上</span></div>`);
   h+=cardChart('疼痛最远位置','越低越好，回收到腰部是好转信号',chart(days,[{v:g('loc'),c:'var(--amber)'}],{max:4,ticks:[[0,'不痛'],[1,'腰'],[2,'臀'],[3,'大腿'],[4,'小腿']]}))}
  const cmp=(x,y,lowGood)=>{if(x==null||y==null)return'';const dlt=x-y;if(Math.abs(dlt)<.3)return' <span class="hint">持平</span>';const good=lowGood?dlt<0:dlt>0;return `<span class="${good?'ok':'bad'}"> ${dlt>0?'↑':'↓'}${f1(Math.abs(dlt))}</span>`};
  h+=`<section class="card"><h2>近 7 天小结</h2>
