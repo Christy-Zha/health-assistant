@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="健康小助手">
+<meta name="theme-color" content="#f2f2f7">
+<title>健康小助手</title>
+<style>
+:root{color-scheme:light dark;--bg:#f2f2f7;--card:#fff;--ink:#1c1c1e;--sub:#8a8a8e;--line:rgba(60,60,67,.16);--fill:rgba(120,120,128,.12);--acc:#1f8a70;--on:#fff;--acc-soft:rgba(31,138,112,.12);--warn:#d93a2f;--warn-soft:rgba(217,58,47,.10);--amber:#b26a00;--amber-soft:rgba(255,159,10,.15);--c-sleep:#7c5cff;--c-food:#2fb67c;--c-move:#ff8a1f;--c-mood:#ec5b8b;--c-spine:#3b82f6;--bar:rgba(249,249,251,.82)}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--ink:#f5f5f7;--sub:#98989d;--line:rgba(84,84,88,.55);--fill:rgba(120,120,128,.24);--acc:#4cc9a6;--on:#00261c;--acc-soft:rgba(76,201,166,.16);--warn:#ff6b5e;--warn-soft:rgba(255,107,94,.16);--amber:#ffb340;--amber-soft:rgba(255,179,64,.16);--c-sleep:#9b85ff;--c-food:#46d39a;--c-move:#ffa040;--c-mood:#ff7aa5;--c-spine:#6aa3ff;--bar:rgba(22,22,24,.82)}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;padding-bottom:calc(92px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+#hdr,#app{max-width:560px;margin:0 auto}
+#hdr{padding:calc(env(safe-area-inset-top) + 16px) 20px 6px;display:flex;align-items:flex-end;justify-content:space-between;gap:10px;min-height:64px}
+#hdr h1{margin:0;font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.02em}
+#hdr .sub{font-size:13px;color:var(--sub);font-weight:500}
+#saveflag{margin:0 20px;color:var(--warn);font-size:13px}
+.back{border:0;background:none;color:var(--acc);font-size:17px;padding:0 0 2px;display:flex;align-items:center;gap:0;margin-left:-6px}
+.dnav{display:flex;gap:8px;align-items:center}
+.dnav button{width:36px;height:36px;border:0;border-radius:50%;background:var(--fill);color:var(--ink);display:grid;place-items:center;padding:0}
+.dnav .today-btn{width:auto;border-radius:18px;padding:0 14px;font-size:14px}
+.card{background:var(--card);border-radius:20px;padding:16px;margin:12px 16px}
+.card h2{margin:0 0 6px;font-size:20px;letter-spacing:-.01em}
+.card h3{margin:0 0 10px;font-size:13px;font-weight:600;color:var(--sub)}
+.card p{margin:0}
+.lb{font-size:13px;color:var(--sub);margin:14px 0 6px}.lb:first-child,h3+.lb{margin-top:0}
+.hint{color:var(--sub);font-size:13px;font-weight:400}
+.group{background:var(--card);border-radius:20px;margin:12px 16px;overflow:hidden}
+.group.due{background:var(--amber-soft)}
+.rowi{display:flex;align-items:center;gap:12px;padding:12px 16px;min-height:56px;border:0;border-top:.5px solid var(--line);width:100%;text-align:left;background:none;color:inherit;font:inherit}
+.group>.rowi:first-child{border-top:0}
+button.rowi{cursor:pointer}button.rowi:active{background:var(--fill)}
+.rt{flex:1;min-width:0;display:flex;flex-direction:column}
+.rt b{font-weight:600;font-size:16px}
+.rt small{color:var(--sub);font-size:13px;line-height:1.35;margin-top:1px}
+.ico{flex:none;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:#fff}
+.chev{color:var(--sub);flex:none;display:flex;opacity:.6}
+.dn{flex:none;color:var(--acc);display:flex}
+.hero{display:flex;align-items:center;gap:22px;padding:20px}
+.rings{width:132px;height:132px;flex:none}
+.leg{flex:1;display:flex;flex-direction:column;gap:12px}
+.leg div{display:flex;flex-direction:column;line-height:1.1}
+.leg span{font-size:12.5px;font-weight:600}
+.leg b{font-size:26px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.leg u{text-decoration:none;font-size:14px;font-weight:500;color:var(--sub);margin-left:3px}
+.big{font-size:44px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.big .u{font-size:18px;font-weight:500;color:var(--sub);letter-spacing:0}
+.big2{margin-top:12px;font-size:15px;color:var(--sub)}
+.gap{list-style:none;margin:12px 0 0;padding:0}
+.gap li{padding:10px 0;border-top:.5px solid var(--line);font-size:15px}
+.gap li b{margin-right:8px}.gap li span{color:var(--sub)}
+.good{color:var(--acc);margin-top:10px!important;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:0;background:var(--fill);color:var(--ink);border-radius:999px;padding:8px 14px;font-size:15px;min-height:36px}
+.chip.on{background:var(--acc);color:var(--on)}.chip.warn.on{background:var(--amber);color:#fff}.chip.f2.on{background:var(--warn);color:#fff}
+.chip.sm{padding:5px 11px;font-size:13px;min-height:30px}
+.scale{display:grid;grid-template-columns:repeat(11,1fr);gap:4px}
+.scale button{height:42px;border:0;background:var(--fill);color:var(--ink);border-radius:10px;font-size:15px;padding:0;font-weight:500}
+.scale button.on.lo{background:var(--acc);color:var(--on)}.scale button.on.mid{background:var(--amber);color:#fff}.scale button.on.hi{background:var(--warn);color:#fff}
+.seg{display:flex;background:var(--fill);border-radius:10px;padding:2px;gap:2px}
+.seg button{flex:1;border:0;background:none;padding:7px 6px;border-radius:8px;font-size:14px;color:var(--ink);white-space:nowrap}
+.seg button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.14);font-weight:600}
+.card>.seg{margin-bottom:0}
+.stp{display:flex;align-items:center;background:var(--fill);border-radius:12px;flex:none}
+.stp button{width:42px;height:38px;border:0;background:none;color:var(--ink);font-size:20px;padding:0}
+.stp b{min-width:38px;text-align:center;font-size:17px;font-variant-numeric:tabular-nums}
+.stp.ok b{color:var(--acc)}.stp.high b{color:var(--amber)}
+.sw{flex:none;width:51px;height:31px;border-radius:16px;border:0;background:var(--fill);position:relative;padding:0;transition:background .2s}
+.sw::after{content:'';position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.25);transition:transform .2s}
+.sw.on{background:var(--acc)}.sw.on::after{transform:translateX(20px)}
+.sw.red.on{background:var(--warn)}
+input,textarea,select{width:100%;border:0;background:var(--fill);color:var(--ink);border-radius:12px;padding:11px 12px;font:inherit;font-size:16px;min-width:0}
+textarea{min-height:76px;resize:vertical;margin-top:10px}
+.inl{width:112px;text-align:right;flex:none}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.two label{font-size:13px;color:var(--sub);display:flex;flex-direction:column;gap:6px}
+.btn{border:0;background:var(--acc);color:var(--on);border-radius:12px;padding:12px 18px;font-size:16px;font-weight:600}
+.btn.ghost{background:var(--fill);color:var(--ink)}.btn.danger{background:var(--warn-soft);color:var(--warn)}.btn.sm{padding:8px 14px;font-size:14px;flex:none}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.alert{margin:12px 16px;padding:14px 16px;border-radius:16px;background:var(--warn-soft);color:var(--warn);font-size:15px}
+.tk{flex:none;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);background:none;color:var(--on);padding:0;display:grid;place-items:center}
+.tk.on{background:var(--acc);border-color:var(--acc)}
+.ex{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:.5px solid var(--line)}
+.ex:first-of-type{border-top:0;padding-top:0}
+.exb{flex:1;min-width:0}.exn{font-weight:600}
+.lnk{border:0;background:none;color:var(--acc);font-size:13px;padding:0 0 0 6px}
+.task{display:flex;gap:12px;align-items:center;padding:8px 0;border-top:.5px solid var(--line)}.task:first-of-type{border-top:0;padding-top:0}
+.stat{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:.5px solid var(--line);font-size:15px}
+.stat b{font-weight:600;text-align:right}
+.bad{color:var(--warn)}.ok{color:var(--acc)}
+.mbar{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:14px}
+.mbar span{width:92px;flex:none}
+.mbar i{flex:1;height:8px;border-radius:4px;background:var(--fill);position:relative;overflow:hidden}
+.mbar i::after{content:'';position:absolute;inset:0;width:var(--w);background:var(--c-food);border-radius:4px}
+.mbar em{width:42px;text-align:right;font-style:normal;color:var(--sub);flex:none}
+.chart{width:100%;height:auto;display:block}
+.chart .grid{stroke:var(--line);stroke-width:.6}
+.chart .tk2{fill:var(--sub);font-size:10px}
+.legend{display:flex;gap:14px;font-size:12.5px;color:var(--sub);margin-top:6px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.verdict{margin-top:12px;padding:12px 14px;border-radius:12px;font-size:14px}
+.verdict.ok2{background:var(--acc-soft);color:var(--acc)}.verdict.no{background:var(--fill);color:var(--sub)}
+.crit{display:flex;justify-content:space-between;padding:7px 0;font-size:15px;gap:8px}
+.edit{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 0;border-top:.5px solid var(--line)}
+.edit:first-of-type{border-top:0}.edit .del{grid-row:span 2;align-self:center}
+.x{border:0;background:none;color:var(--sub);font-size:18px;padding:0 6px}
+.pill{border-radius:999px;padding:5px 12px;font-size:13px;border:0;background:var(--fill);color:var(--ink)}
+.pill.lock{background:var(--amber-soft);color:var(--amber)}.pill.open{background:var(--acc-soft);color:var(--acc)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+td,th{padding:8px 4px;border-top:.5px solid var(--line);text-align:left;vertical-align:top}th{color:var(--sub);font-weight:500;font-size:13px}
+td:first-child,th:first-child{white-space:nowrap;padding-right:8px}
+details{border-top:.5px solid var(--line)}details:first-of-type{border-top:0}
+summary{padding:12px 0;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer}
+summary::-webkit-details-marker{display:none}
+summary::after{content:'›';color:var(--sub);font-size:20px;transition:transform .15s;flex:none;line-height:1}
+details[open]>summary::after{transform:rotate(90deg)}
+summary .tags{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.tag{border-radius:999px;padding:2px 8px;font-size:11.5px;font-weight:500;background:var(--fill);color:var(--sub);white-space:nowrap}
+.tag.warn{background:var(--amber-soft);color:var(--amber)}.tag.ok{background:var(--acc-soft);color:var(--acc)}.tag.bad{background:var(--warn-soft);color:var(--warn)}
+.dbody{padding:0 0 12px;font-size:15px}
+.dbody h4{margin:12px 0 4px;font-size:12.5px;color:var(--sub);font-weight:600}
+.card ul,.card ol{margin:0;padding-left:20px}.card li{margin:4px 0}
+.light{padding:10px 12px;border-radius:12px;margin-top:8px;font-size:14px}
+.light.g{background:var(--acc-soft);color:var(--acc)}.light.y{background:var(--amber-soft);color:var(--amber)}.light.r{background:var(--warn-soft);color:var(--warn)}
+.foot{color:var(--sub);font-size:13px;margin:8px 20px 16px;line-height:1.6}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);border-top:.5px solid var(--line);padding:6px 0 calc(env(safe-area-inset-bottom) + 4px)}
+nav button{flex:1;border:0;background:none;color:var(--sub);font-size:10.5px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0}
+nav button.on{color:var(--acc)}
+#toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 18px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+#toast.show{opacity:.92}
+.card .gap{padding-left:0}
+.boot{margin:36px 24px;color:var(--sub);line-height:1.8;font-size:15px}
+
+</style>
+</head>
+<body>
+<header id="hdr"><h1>健康小助手</h1></header>
+<div id="saveflag"></div>
+<main id="app"><p class="boot">正在加载……<br>如果一直停在这里，说明当前的打开方式没有运行网页脚本（比如 iPhone“文件”App 里的预览）。请改用能运行网页的 App 或浏览器打开，再试一次。</p></main>
+<nav id="nav"></nav>
+<div id="toast"></div>
+<input type="file" id="imp" accept=".json,application/json" hidden>
+<script>
+window.addEventListener('error',function(e){var a=document.getElementById('app');if(a&&a.querySelector('.boot')){a.innerHTML='<p class="boot">页面运行出错：'+String(e.message||'未知错误').replace(/[<>&]/g,'')+'<br>请把这段文字截图发给 Claude。</p>'}});
+</script>
+<script>
+/* ===== 内容与营养引擎 ===== */
+const AVOID=['含糖饮料','油炸烧烤','加工肉','酒','夜宵','口味偏重'];
+const STIFF=['没有','15 分钟内','15–30 分钟','30 分钟以上'];
+const GEN_STOP='训练中或训练后出现腿部放射痛加重、麻木范围扩大、腿无力，立刻停止；疼痛超过 3 分且休息后不缓解，或次天明显比前一天更痛，下次减量或退回上一级。';
+
+/* —— 营养均衡：七类食物（按膳食宝塔）—— */
+const GROUPS=[
+{k:'grain',n:'谷薯',unit:'1 份 ≈ 一拳米饭 / 一个馒头 / 一小个红薯',lo:4,hi:6,role:'提供能量、B 族维生素和膳食纤维。主食里要有一部分全谷物和杂豆。',eg:'杂粮饭、全麦面包、燕麦、玉米、红薯、山药'},
+{k:'veg',n:'蔬菜',unit:'1 份 ≈ 一捧生菜 / 半碗熟菜（约 100 g）',lo:3,hi:5,role:'提供维生素 C、钾和膳食纤维。深色蔬菜（深绿、橙红、紫）应占一半以上。',eg:'菠菜、西兰花、油麦菜、胡萝卜、番茄、紫甘蓝、菌菇'},
+{k:'fruit',n:'水果',unit:'1 份 ≈ 一个拳头大（约 100–150 g）',lo:2,hi:3,role:'提供维生素 C、钾和果胶。不要用果汁代替整个水果。',eg:'苹果、橙子、猕猴桃、蓝莓、香蕉'},
+{k:'prot',n:'鱼禽蛋肉',unit:'1 份 ≈ 半个手掌大（约 50 g）/ 一个鸡蛋 / 6–8 只虾',lo:3,hi:4,role:'提供优质蛋白、铁、锌和维生素 B12。鱼每周至少 2 次，蛋每天 1 个。',eg:'鱼、虾、鸡蛋、鸡胸、瘦牛肉、瘦猪肉'},
+{k:'milk',n:'奶类',unit:'1 份 ≈ 一杯牛奶（250 ml）/ 一杯无糖酸奶',lo:1,hi:2,role:'提供钙和优质蛋白，对骨骼和肌肉的恢复都有用。',eg:'牛奶、无糖酸奶、奶酪'},
+{k:'soy',n:'豆类和坚果',unit:'1 份 ≈ 一块豆腐 / 一杯无糖豆浆 / 一小把坚果',lo:1,hi:2,role:'提供植物蛋白、不饱和脂肪和镁。坚果一天一小把就够，别多。',eg:'豆腐、豆浆、豆干、核桃、杏仁、花生'}];
+const ITEMS=[
+ {k:'grain',n:'谷薯',ok:t=>t.sv.grain>=4},
+ {k:'whole',n:'全谷物和杂豆',ok:t=>!!t.whole},
+ {k:'veg',n:'蔬菜',ok:t=>t.sv.veg>=3},
+ {k:'dark',n:'深色蔬菜',ok:t=>!!t.dark},
+ {k:'fruit',n:'水果',ok:t=>t.sv.fruit>=2},
+ {k:'prot',n:'鱼禽蛋肉',ok:t=>t.sv.prot>=3},
+ {k:'milk',n:'奶类',ok:t=>t.sv.milk>=1},
+ {k:'soy',n:'豆类和坚果',ok:t=>t.sv.soy>=1},
+ {k:'water',n:'饮水',ok:t=>t.water>=6},
+ {k:'kinds',n:'食物种类',ok:t=>t.kinds>=12}];
+const TIPS={
+ grain:t=>`再吃 ${4-t.sv.grain} 份：半碗杂粮饭、一根玉米或一块红薯`,
+ whole:()=>'主食里加一份糙米、燕麦、玉米或杂豆',
+ veg:t=>`再吃 ${3-t.sv.veg} 份：一份清炒或凉拌的绿叶菜`,
+ dark:()=>'把一半蔬菜换成深绿、橙红或紫色的',
+ fruit:t=>`再吃 ${2-t.sv.fruit} 份：一个苹果、橙子或一小碗莓类`,
+ prot:t=>`再吃 ${3-t.sv.prot} 份：一个鸡蛋，或半个手掌大的鱼虾、鸡胸`,
+ milk:()=>'再来一杯牛奶或无糖酸奶',
+ soy:()=>'来一块豆腐、一杯无糖豆浆，或一小把原味坚果',
+ water:t=>`再喝 ${6-t.water} 杯水`,
+ kinds:t=>`再多吃 ${12-t.kinds} 种不同的食物（杂豆、菌藻、不同颜色的蔬菜都算）`};
+
+function dietTouched(t){return !!t&&!!t.sv&&(Object.values(t.sv).some(v=>v>0)||!!t.whole||!!t.dark||!!t.fish||t.water>0||t.kinds>0||(t.avoid||[]).length>0)}
+function dietScore(x){const t=x&&x.diet;if(!dietTouched(t))return null;return ITEMS.filter(i=>i.ok(t)).length}
+function dietGaps(x){const t=x&&x.diet;if(!dietTouched(t))return[];
+ const g=ITEMS.filter(i=>!i.ok(t)).map(i=>({k:i.k,n:i.n,tip:TIPS[i.k](t)}));
+ GROUPS.forEach(G=>{if(G.k!=='veg'&&t.sv[G.k]>G.hi+1)g.push({k:G.k,n:G.n,tip:'今天偏多，下一餐适当减量',over:1})});return g}
+function avoidText(a){const e=Object.entries(a.avoid).sort((x,y)=>y[1]-x[1]);return e.length?e.map(([k,n])=>`${k}×${n}`).join('、'):'无'}
+function stiffText(a){if(!a.stiff.length)return '—';return '最长'+STIFF[Math.max(...a.stiff)]}
+function sleepHrs(x){if(!x||!x.sleepStart||!x.sleepEnd)return null;const t=s=>{const[h,m]=s.split(':').map(Number);return h*60+m};if(t(x.sleepEnd)===t(x.sleepStart))return null;let d=t(x.sleepEnd)-t(x.sleepStart);if(d<=0)d+=1440;return Math.round(d/6)/10}
+function sleepLine(d){const h=sleepHrs(d);return h==null?'填入睡和起床时间后自动计算':'约 '+h+' 小时'+(h<7?'（偏少）':'')}
+
+/* —— 腰椎动作库 —— */
+const LIB=[
+{id:'walk',name:'散步',st:1,short:'舒适速度，10–15 分钟起，逐步增加',
+ goal:'促进血液循环、维持活动度，是所有训练的基础。对腰椎友好，也是最容易坚持的一项。',
+ steps:['选平坦路面，步幅自然，不刻意大步','抬头看前方，肩放松，手臂自然摆动','脚跟先着地，身体不前倾也不后仰','穿缓冲好的鞋'],
+ dose:'从你舒适的时长开始（比如 10–15 分钟），每周增加约 10%–20%。先加时间，再加速度。',
+ tips:['能正常说话的强度就够了','可以拆成一天 2–3 次，每次短一点','走路时把手机放进口袋，不要低头看'],
+ err:['走到疼得明显才停','为了步数快走、爬坡','边走边低头看手机'],
+ stop:'走路中腿部放射痛、麻木加重，或必须弯腰才舒服，就停下休息；休息后仍不缓解，当天不再走。'},
+{id:'breath',name:'腹式呼吸',st:1,short:'5–10 次 × 2–3 组，轻收腹',
+ goal:'学会在不憋气的情况下轻轻启动深层核心（腹横肌），是后面所有稳定训练的前提。',
+ steps:['仰卧，双膝屈曲，脚掌踩床，头下垫薄枕','一手放胸口，一手放肚脐下方','用鼻子慢吸气 3–4 秒，让腹部向外鼓起，胸口尽量不动','用嘴慢呼气 4–6 秒，同时肚脐轻轻向脊柱方向收，像把腰带系紧一点点','保持腰部自然弧度，不要压平，也不要刻意拱起'],
+ dose:'5–10 次为一组，每天 2–3 组。可以在起床前、午休、睡前做。',
+ tips:['收腹只用 20%–30% 的力，能正常说话','呼气时肋骨下缘自然向内收拢'],
+ err:['憋气','用力收肚子，把腰压死在床面上','胸口大幅起伏']},
+{id:'pelvic',name:'骨盆中立位感知',st:1,short:'小幅度前后摆动，找到最舒服的位置',
+ goal:'找到不痛、最放松的骨盆位置（中立位），日常坐站和训练都以它为参照。',
+ steps:['仰卧屈膝，双脚踩床','呼气时骨盆轻轻向后卷（腰弧度稍减小），吸气时回到放松位置','幅度要小，再轻轻向另一方向微动','找到最舒服、不痛的中间位置，停在这里做 3 次腹式呼吸'],
+ dose:'8–10 次，每天 1–2 组。',
+ tips:['幅度小到只有几厘米','如果某个方向让腿部症状加重，就不要往那个方向做'],
+ err:['用力把腰压平','幅度过大，带动整个背部'],
+ note:'有些人向前、有些人向后的活动会引起症状，这一项请让康复师看过你的方向偏好后再长期做。'},
+{id:'bridge',name:'臀桥',st:1,short:'8–10 次 × 2 组，顶点停 2–3 秒',
+ goal:'激活臀部，让臀部分担腰部的负担，是以后蹲、起、提物的基础。',
+ steps:['仰卧屈膝，脚与髋同宽，脚跟离臀部约一拳半到两拳','呼气，轻轻收腹，臀部发力把骨盆抬起','肩、髋、膝成一条直线即可，不要再往上挺腰','顶点停 2–3 秒，吸气，慢慢放下'],
+ dose:'8–10 次 × 2 组，组间休息 30–60 秒。进阶：每次保持 10 秒，做 5 次。',
+ tips:['想象脚跟在“推”地','感觉应在臀部发力，而不是腰部','上去用 2 秒，下来用 3 秒'],
+ err:['抬得太高，腰过度前挺','膝盖向内塌','速度太快，靠冲力']},
+{id:'birddog',name:'鸟狗式',st:1,short:'每侧 5–6 次，每次保持 5–8 秒',
+ goal:'在手脚运动时保持脊柱稳定，训练背部和核心的协同（McGill 三大稳定动作之一）。',
+ steps:['四点支撑：手在肩正下方，膝在髋正下方，脊柱保持中立','轻轻收腹，像要挡一拳','先只抬一只手或一条腿，稳定后再同时抬对侧的手和腿','手臂和腿抬到与身体平行即可，不要更高','保持 5–8 秒，慢慢放下，换对侧'],
+ dose:'每侧 5–6 次，每次保持 5–8 秒，做 2 组。可以用“6 次—休息—4 次—休息—2 次”的递减方式，不求次数多。',
+ tips:['腿向后“蹬”，不是向上“甩”','骨盆保持水平，想象背上放着一杯水','跪着不舒服时，可站着双手扶桌台，轮流抬对侧手和腿'],
+ err:['抬腿过高，腰塌下去或向一侧扭','骨盆晃动、转动','憋气'],
+ note:'四点跪姿腰部不适时，从“只抬手”或“只抬腿”开始。'},
+{id:'sidebridge',name:'侧桥（屈膝版）',st:2,confirm:true,short:'每侧 3–5 次，每次 8–10 秒',
+ goal:'训练腰侧的稳定肌群，让腰在站立和行走时不晃（McGill 三大稳定动作之一）。',
+ steps:['侧卧，肘在肩正下方，双膝屈曲约 90°','呼气，轻轻收腹，臀部抬离床面','肩、髋、膝成一条直线，保持 8–10 秒','慢慢放下，休息 10 秒后再做'],
+ dose:'每侧 3–5 次，每次 8–10 秒，先做完一侧再换另一侧，两侧次数相同。',
+ tips:['身体保持在一个平面里，不前倾不后仰','下面的肩膀不要耸，肩往远离耳朵的方向推'],
+ err:['髋部下沉或塌腰','耸肩','为了多做几秒而憋气'],
+ note:'进入这一项之前，先让康复师确认你已经可以升到阶段二。'},
+{id:'curlup',name:'改良卷腹',st:2,confirm:true,short:'每次 7–10 秒，5-3-1 递减',
+ goal:'训练腹直肌的稳定耐力，同时让脊柱几乎不动（McGill 三大稳定动作之一）。它和仰卧起坐完全不同。',
+ steps:['仰卧，一腿伸直，一腿屈膝，双手掌心向下垫在腰下方，保持腰部自然弧度','轻轻收腹，肘部微微离床','只抬起头和肩膀一点点（脖子和躯干一起抬），腰不动','保持 7–10 秒，缓慢回落'],
+ dose:'递减方式：5 次 → 休息 30 秒 → 3 次 → 休息 30 秒 → 1 次。每组换腿，疼的一侧保持屈膝。',
+ tips:['像“把头和肩膀托起一点点”，而不是坐起来','手垫在腰下，用来保持腰弧度，不要压平','应该是“有点累”，不是“累到出汗”'],
+ err:['做成仰卧起坐','把腰用力压向地面','脖子用力、憋气'],
+ note:'这一项属于需要康复师同意后再做的动作。普通的仰卧起坐、大幅度卷腹仍在暂缓清单里。'},
+{id:'hinge',name:'髋铰链',st:2,confirm:true,short:'8–10 次 × 2 组，先空手',
+ goal:'学会“从髋部折叠”而不是“从腰部弯下去”。这是提东西、捡东西、洗脸弯腰时保护腰的核心动作。',
+ steps:['站立，双脚与髋同宽，膝微屈','把一根木棍或扫把竖在背后，贴住后脑、上背和骶骨','臀部向后“坐”，上身自然前倾，棍子的三个接触点不能离开','感觉大腿后侧被拉紧，到腰开始要弯之前停下','臀部向前发力，站直'],
+ dose:'8–10 次 × 2 组，先空手练，熟练后再拿很轻的东西。',
+ tips:['想象臀部去碰身后的墙','折叠的是髋，不是腰','动作慢，下去 3 秒，上来 2 秒'],
+ err:['弯腰代替髋折叠','膝盖前顶过多，变成下蹲','直腿硬拉']},
+{id:'wallsit',name:'靠墙半蹲',st:2,confirm:true,short:'膝约 45–60°，保持 10–20 秒 × 5',
+ goal:'在背部有支撑的情况下练大腿和臀部力量，为日常蹲起做准备。',
+ steps:['背靠墙，双脚向前迈出约一脚半，与肩同宽','慢慢下滑，让膝关节弯到约 45–60°，不要到 90°','腰自然贴墙，不要用力压墙','保持 10–20 秒，慢慢站起'],
+ dose:'保持 10–20 秒，做 5 次，休息 30–60 秒。',
+ tips:['膝盖对着脚尖方向，不内扣','重心落在脚后跟和脚掌中部'],
+ err:['蹲得过深','膝盖超过脚尖太多','憋气']},
+{id:'hipflexor',name:'半跪髋屈肌拉伸',st:2,confirm:true,short:'每侧 2–3 次 × 20–30 秒',
+ goal:'久坐会让髋前侧变紧，牵拉腰部。放松髋屈肌，可以减轻腰椎的被动牵拉。',
+ steps:['半跪，后膝下垫软垫，前腿屈膝约 90°','收腹，骨盆轻轻向后卷（把尾骨向前卷）','身体重心缓缓向前移，后腿大腿前侧和髋前侧有拉伸感','保持 20–30 秒，不要让腰向前塌'],
+ dose:'每侧 2–3 次，每次 20–30 秒。',
+ tips:['拉伸感在髋前，不在腰','上身保持直立，不要向前趴'],
+ err:['腰向前塌，把拉伸感变成腰部压迫','前倾身体','憋气']},
+{id:'fig4',name:'仰卧 4 字臀部拉伸',st:2,confirm:true,short:'每侧 2–3 次 × 20–30 秒',
+ goal:'放松臀部深层肌（梨状肌等），减轻臀部、大腿外侧的紧绷。',
+ steps:['仰卧屈膝，一只脚踝放在对侧膝盖上','双手抱住下方那条大腿，轻轻拉向胸口','臀部外侧有拉伸感即可，保持 20–30 秒'],
+ dose:'每侧 2–3 次，每次 20–30 秒。',
+ tips:['只拉到“舒服的紧”，不要硬拉','全程自然呼吸'],
+ err:['用力拉到发痛','抬头抬肩，脖子用力'],
+ stop:'腿部出现麻木、放射痛就立刻放松，不要再做；坐骨神经敏感时不要用力拉伸。'},
+{id:'mckenzie',name:'麦肯基伸展（俯卧撑起）',st:3,confirm:true,short:'需康复师评估后再做',
+ goal:'一类按“方向偏好”做的伸展动作。有的人向后伸展能让疼痛向腰部回收，有的人反而会加重。',
+ steps:[],dose:'',tips:[],err:[],
+ note:'这一项我不提供动作步骤：是否适合你，要由康复师现场评估你的症状方向后再决定。你可以带着小助手里“疼痛位置变化”的记录去就诊。',
+ stop:'评估前请不要自行尝试。'}
+];
+const PRINC=[
+ '稳定类动作“少量、多次、每天做”，比一次做很多更有效；散步每天都可以。',
+ '动作慢，呼吸不憋气，质量比次数重要。',
+ '每次只改一个变量（次数、时长、难度），每周增幅不超过 10%–20%。',
+ '训练前先热身：散步约 5 分钟，加几次腹式呼吸。',
+ '起床后 1 小时内，尽量避免大幅弯腰、卷腹类动作。',
+ '没有康复师确认，不要自己升到阶段二；训练后感觉“更差”的动作，先暂停。'];
+
+/* —— 姿势、睡眠 —— */
+const POST=[
+{id:'p-sit',n:'坐',pts:['坐在椅子前 2/3，坐骨坐稳，不翘二郎腿','腰后垫小靠垫或卷起的毛巾，托住腰的自然弧度','屈髋屈膝约 90°，膝盖略低于髋，双脚平放','屏幕上沿与眼睛同高，距离约一臂；键盘位置让肘部约 90°','每 30–45 分钟起身，走 2–3 分钟；打电话、开会尽量站着']},
+{id:'p-stand',n:'站',pts:['双脚与髋同宽，重心均匀落在两脚','骨盆保持中立，不刻意挺胸，也不塌腰','长时间站立时，一只脚踩小凳轮换','每 20–30 分钟换一次姿势，走动一下']},
+{id:'p-bed',n:'起床 / 躺下',pts:['起床：先屈双膝，肩和髋一起转向一侧（像滚木头）','用下面的肘和上面的手撑起上身，同时把双腿放下床沿','呼气、轻收腹，坐稳停几秒，再站起来','躺下：按相反顺序，不要直接仰卧起坐']},
+{id:'p-lift',n:'提重物',pts:['先靠近物体，双脚分开与肩同宽','用髋铰链或下蹲，背保持中立','呼气、轻收腹，用腿和臀的力量站起来','物体贴近身体，不要边提边转腰；要转方向就转脚','太重就分次拿，或者请人帮忙']},
+{id:'p-pick',n:'捡地上的东西',pts:['单手扶桌子或墙，一条腿向后抬起，像“鞠躬”','或者半跪、下蹲去捡','不要双腿伸直直接弯腰']},
+{id:'p-wash',n:'洗脸 / 刷牙',pts:['膝微屈，髋向后折叠，一手撑在台面上','或略半蹲，避免长时间弯腰','洗头时可坐着洗或站着靠墙']},
+{id:'p-sock',n:'穿袜子 / 穿鞋',pts:['坐在床边或椅子上，把脚抬向身体','不要站着弯腰去够脚尖','可以用长柄鞋拔']},
+{id:'p-sneeze',n:'咳嗽 / 打喷嚏',pts:['站着时：一手扶桌子，微屈膝，收紧腹部','躺着时：屈膝，双手轻按腹部','预感要打喷嚏时，先站稳，不要同时弯腰']},
+{id:'p-car',n:'开车 / 上下车',pts:['座椅靠背约 100°–110°，腰托对准腰的弧度','离踏板和方向盘近一点，膝微屈','上车：先坐下，再整体转身，把双腿一起抬进去；下车相反，避免扭腰','长途每 1 小时休息，下车走动 2–3 分钟']}
+];
+const SLEEP_POST=[
+{id:'sl-side',n:'侧卧（首选）',pts:['两膝之间夹一个枕头，让骨盆保持中立，腰不要向下扭','膝盖稍微弯曲，不要蜷成虾米','枕头高度让头颈与脊柱成一条直线，约与肩同高','需要时抱个抱枕，防止上半身翻到俯卧']},
+{id:'sl-back',n:'仰卧',pts:['膝盖下垫一个枕头或卷起的毛巾，让腰放松','腰下空隙很大时，可垫一个薄的小毛巾卷','枕头不要太高，下巴不要贴胸']},
+{id:'sl-prone',n:'俯卧（不推荐）',pts:['俯卧会让腰过度前凸、颈部扭转','实在只能趴着睡，可在腹部下垫一个薄枕，并尽量逐步改成侧卧']},
+{id:'sl-bed',n:'床垫与翻身',pts:['选中等硬度，能托住腰的弧度，也不能太软下陷','翻身时屈膝、肩髋一起转，不要只扭腰','起床按“滚木头”方式，见“姿势”']}
+];
+const SLEEP_HAB=[
+ '固定起床时间，周末与工作日相差不超过 1 小时；成人建议每晚睡够 7 小时以上',
+ '睡前 1 小时尽量远离强光屏幕，把手机放远',
+ '下午 2 点后少喝咖啡、浓茶',
+ '晚饭与睡觉间隔至少 2–3 小时，避免夜宵',
+ '酒不助眠，反而会让睡眠变浅',
+ '卧室暗、静、稍凉；睡前做 3–5 分钟腹式呼吸',
+ '睡眠不足会让疼痛更敏感，也会让情绪和食欲变差，值得认真对待'];
+
+/* —— 饮食方案内容 —— */
+const FOOD_PROT=[['鸡蛋 1 个（约 50 g）','6 g'],['牛奶 250 ml','8 g'],['无糖豆浆 250 ml','7 g'],['鸡胸肉 100 g（生）','22 g'],['鱼 / 虾 100 g（可食部分）','17–20 g'],['瘦牛肉 100 g（生）','20 g'],['北豆腐 100 g（南豆腐约 6 g）','12 g']];
+const FOOD_REF=[['蔬菜','300–500 g（深色占一半以上）'],['水果','200–350 g'],['谷类','200–300 g（含全谷物、杂豆 50–150 g）'],['薯类','50–100 g'],['鱼、禽、蛋、瘦肉合计','120–200 g；鱼每周 ≥2 次；蛋每天 1 个'],['奶及奶制品','300–500 g'],['大豆及坚果','25–35 g'],['烹调油 / 盐','油 25–30 g；盐 <5 g'],['饮水','1500–1700 ml（约 7–8 杯）'],['食物种类','平均每天 12 种以上，每周 25 种以上'],['酒','不饮或少饮；若饮，酒精不超过 15 g/天']];
+const MEAL_OPT=[
+ ['早餐（三选一轮换）',['无糖豆浆或牛奶 + 全麦面包 / 杂粮馒头 + 水煮蛋 + 黄瓜或小番茄','牛奶煮燕麦 + 一小把坚果 + 水果 + 蛋','杂粮粥 + 豆腐或鸡蛋 + 凉拌蔬菜']],
+ ['午餐（先吃菜，再吃肉，最后吃主食）',['一拳杂粮饭 + 半个手掌大的蛋白质 ×2（鸡胸 / 鱼 / 虾 / 豆腐 / 瘦牛肉）+ 两捧蔬菜（绿叶菜为主）','汤面类：选清汤，加一份蛋白质和一份青菜，少喝汤']],
+ ['晚餐（尽量 19 点前，清淡）',['同午餐结构，主食约午餐的 2/3','蒸煮炖为主，少油少盐']],
+ ['加餐（饿了再吃）',['无糖酸奶 / 一小把原味坚果 / 一个水果 / 一个水煮蛋']]];
+const WEEK_PLAN=[
+ ['周一','杂粮饭 + 清炒鸡胸西兰花 + 凉拌黄瓜','小米南瓜粥 + 豆腐炖白菜 + 水煮蛋'],
+ ['周二','糙米饭 + 清蒸鱼 + 蒜蓉菠菜（鱼 ①）','蒸紫薯 + 虾仁炒芦笋 + 番茄蛋汤'],
+ ['周三','荞麦面 + 瘦牛肉炒彩椒 + 拌木耳','杂粮馒头 + 少油豆腐 + 炒青菜'],
+ ['周四','杂粮饭 + 白灼虾 + 清炒油麦菜','蒸山药 + 番茄炒蛋 + 菌菇汤'],
+ ['周五','糙米饭 + 清炖鱼块 + 炒时蔬（鱼 ②）','燕麦粥 + 鸡丝拌菠菜 + 蒸蛋'],
+ ['周六','全麦面 + 肉末炒豆角 + 拌菜','外食时选蒸、煮、炖，让蔬菜占半盘'],
+ ['周日','杂粮饭 + 去皮炖鸡香菇 + 青菜','蔬菜豆腐汤 + 少油蛋饼']];
+const NUTR=[
+ ['钙','来源：奶及奶制品、豆制品、深绿叶菜。成人每天约需 800 mg，50 岁以上约 1000 mg。'],
+ ['铁','来源：红肉、动物血、动物肝脏（少量）。和富含维生素 C 的蔬果一起吃，吸收更好。'],
+ ['维生素 D','来源：适度日晒、鱼、蛋黄。要不要补充，看体检里的 25-羟维生素 D 结果，由医生决定。'],
+ ['维生素 B12','来源：肉、鱼、蛋、奶等动物性食物。吃素的人要特别关注。'],
+ ['钾','来源：蔬菜、水果、豆类、薯类。肾功能不好的人请遵医嘱。'],
+ ['镁','来源：坚果、全谷物、深绿叶菜、豆类。'],
+ ['碘','来源：加碘盐、海带、紫菜。甲状腺有问题的人请遵医嘱。'],
+ ['膳食纤维','来源：全谷物、杂豆、蔬菜、水果。成人每天约 25–30 g，要配合多喝水。'],
+ ['ω-3 脂肪酸','来源：深海鱼（每周 2 次以上）、核桃、亚麻籽油。']];
+const GOAL_N={keep:'维持健康',lose:'减脂',gain:'增肌'};
+const GOAL_TIPS={
+ keep:['体重稳定、营养均衡，比盯着数字更重要','每周同一天称一次体重，1 kg 以内的波动都正常'],
+ lose:['每周减约 0.25–0.5 kg 为宜，以饮食调整为主','主食不要砍掉，减量即可；多吃蔬菜增加饱腹感','蛋白质要吃够，避免减重时掉肌肉','避免极端节食、只喝代餐、长时间断食'],
+ gain:['在营养均衡的基础上，每餐多一点主食和蛋白质','要配合力量训练，才能增肌而不是增脂','加餐用牛奶、酸奶、坚果、鸡蛋，不用甜饮料']};
+const SKIP=['含糖饮料、奶茶','油炸、烧烤','腌制和加工肉（腊肉、香肠、火腿）','甜点、糕点','精白主食吃得过多','口味偏重（盐多、油多）','酒','睡前 3 小时内进食'];
+
+/* —— 运动方案内容 —— */
+const SPORTS=[
+ ['快走','友好','有氧首选，从舒适的时长起步'],
+ ['固定自行车 / 椭圆机','友好','座椅调到腰背能保持中立，不要弓着背骑'],
+ ['游泳（自由泳、仰泳）','需确认','水中负荷小，但要先确认动作和换气方式'],
+ ['太极、八段锦','需确认','动作缓慢，注意避免大幅度扭转和深蹲'],
+ ['瑜伽、普拉提','小心','避免深度前屈和大幅扭转，选核心稳定类体式'],
+ ['慢跑','暂缓','冲击较大，等康复师同意后再逐步恢复'],
+ ['蛙泳','暂缓','腰部反复后伸，容易加重'],
+ ['羽毛球、网球、高尔夫','暂缓','旋转和突然变向多，复发风险高'],
+ ['杠铃深蹲、硬拉','暂缓','需要康复师评估后再逐步安排']];
+const STRENGTH=[
+ ['坐站（椅子起立）','双脚与肩同宽，手前伸，慢慢站起再慢慢坐下，8–12 次'],
+ ['臀桥','见腰椎动作库，8–10 次'],
+ ['墙俯卧撑','双手撑墙，身体成一条直线，屈肘靠近墙再推开，8–12 次；变轻松后改成跪姿俯卧撑'],
+ ['弹力带坐姿划船','坐直，脚套弹力带，肘贴身向后拉，肩胛后收，8–12 次'],
+ ['鸟狗式','见腰椎动作库，每侧 5–6 次'],
+ ['侧桥（屈膝版）','见腰椎动作库，每侧 3–5 次']];
+const WEEK_MOVE=[['周一','快走 40 分钟'],['周二','力量 20–30 分钟'],['周三','快走 40 分钟'],['周四','轻松散步 30 分钟'],['周五','力量 20–30 分钟'],['周六','散步或骑行 60 分钟'],['周日','休息 + 拉伸']];
+
+let planSub='diet',libFilter=0;const openSet=new Set();
+function ul(a){return '<ul>'+a.map(x=>`<li>${esc(x)}</li>`).join('')+'</ul>'}
+function ol(a){return '<ol>'+a.map(x=>`<li>${esc(x)}</li>`).join('')+'</ol>'}
+function det(id,sum,body){return `<details data-id="${id}" ${openSet.has(id)?'open':''}><summary>${sum}</summary><div class="dbody">${body}</div></details>`}
+document.addEventListener('toggle',e=>{const t=e.target;if(t&&t.tagName==='DETAILS'&&t.dataset.id){t.open?openSet.add(t.dataset.id):openSet.delete(t.dataset.id)}},true);
+function latestOf(f){const k=Object.keys(S.weekly).sort().reverse().find(k=>+S.weekly[k][f]>0);return k?+S.weekly[k][f]:null}
+
+/* —— 方案页 —— */
+function libItem(L){
+ const mine=S.exercises.some(x=>x.libId===L.id);
+ const stag=L.st===1?'阶段一':L.st===2?'阶段二':'需评估';
+ let b=`<h4>作用</h4><p>${esc(L.goal)}</p>`;
+ if(L.steps.length)b+=`<h4>怎么做</h4>${ol(L.steps)}<h4>次数</h4><p>${esc(L.dose)}</p>`;
+ if(L.tips.length)b+=`<h4>要点</h4>${ul(L.tips)}`;
+ if(L.err.length)b+=`<h4>常见错误</h4>${ul(L.err)}`;
+ b+=`<h4>什么时候停</h4><p>${esc(L.stop||GEN_STOP)}</p>`;
+ if(L.note)b+=`<div class="verdict no">${esc(L.note)}</div>`;
+ if(L.steps.length)b+=`<div class="btns"><button class="btn sm ${mine?'ghost':''}" data-act="${mine?'libdel':'libadd'}" data-id="${L.id}">${mine?'已在我的清单 · 点此移出':'加入我的每日训练'}</button></div>`;
+ return det(L.id,`<span>${esc(L.name)}</span><span class="tags"><span class="tag">${stag}</span>${L.confirm?'<span class="tag warn">需康复师确认</span>':''}${mine?'<span class="tag ok">已加入</span>':''}</span>`,b)}
+
+function planEx(){
+ const F=[['全部',0],['阶段一',1],['阶段二',2],['需评估',3]];
+ let h=`<section class="card"><h2>训练通则</h2>
+ <div class="light g"><b>绿灯</b> 疼痛 ≤3 分、不向腿部扩散，次天起床不比前一天更差 → 保持，可小幅加量</div>
+ <div class="light y"><b>黄灯</b> 疼痛 4–5 分，或次天明显更痛 → 减量，或退回上一级动作</div>
+ <div class="light r"><b>红灯</b> 腿部放射痛加重、麻木扩大、腿无力 → 立即停止，联系医生</div>
+ <div style="margin-top:12px">${ul(PRINC)}</div></section>`;
+ h+=`<section class="card"><h2>动作库</h2><div class="hint" style="margin-bottom:10px">当前：${esc(PHASES[S.phase].n)}</div>
+ <div class="seg" style="margin-bottom:6px">${F.map(([n,v])=>`<button data-act="lfilter" data-v="${v}" class="${libFilter===v?'on':''}">${n}</button>`).join('')}</div>`;
+ h+=LIB.filter(L=>!libFilter||L.st===libFilter).map(libItem).join('');
+ h+=`</section><section class="card"><h2>暂不安排的动作</h2><p class="hint">负重深蹲、硬拉、单腿负重、跑跳、大幅度旋转等，要等康复师评估你的恢复情况后再逐项设计。可在「腰椎」页的暂缓清单里查看和解锁。</p></section>`;
+ return h}
+
+function planPost(){return `<section class="card"><h2>日常姿势</h2><p class="hint" style="margin-bottom:6px">日常生活的负荷，常常比训练还大</p>${POST.map(p=>det(p.id,`<span>${p.n}</span>`,ul(p.pts))).join('')}</section>`}
+
+function planSleep(){
+ return `<section class="card"><h2>睡眠目标</h2><p>每晚睡够 7 小时以上，作息固定，夜里少醒，早上精神好。在「今日」页记录，趋势页能看到变化。</p></section>
+ <section class="card"><h2>睡姿与床</h2>${SLEEP_POST.map(p=>det(p.id,`<span>${p.n}</span>`,ul(p.pts))).join('')}</section>
+ <section class="card"><h2>睡眠习惯</h2>${ul(SLEEP_HAB)}</section>
+ <section class="card"><div class="alert" style="margin:0">夜里持续剧痛、换姿势也不缓解，或伴有发热、不明原因的体重下降，请尽快就医。出现会阴部麻木、大小便异常，请立即就医。</div></section>`}
+
+function planMove(){
+ const sp=S.mods.spine;
+ let h=`<section class="card"><h2>每周目标</h2>
+ <div class="stat"><span>有氧运动</span><b>中等强度 150–300 分钟<br>或高强度 75–150 分钟</b></div>
+ <div class="stat"><span>肌肉力量</span><b>每周至少 2 天</b></div>
+ <div class="stat"><span>久坐</span><b>每 30–45 分钟起身</b></div>
+ <p class="hint" style="margin-top:10px">依据《中国人群身体活动指南（2021）》。中等强度：心跳加快、微微出汗，能说话但唱不了歌。高强度：只能说几个字。</p></section>`;
+ h+=`<section class="card"><h2>一周示例</h2><table>${WEEK_MOVE.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table><p class="hint" style="margin-top:8px">快走合计约 170 分钟，力量 2 天。可按自己的节奏调整，先从做得到的量开始。</p></section>`;
+ h+=`<section class="card"><h2>力量训练怎么开始</h2><p class="hint" style="margin-bottom:6px">每周 2 天，每次选 6 个动作，每个 2 组 × 8–12 次，组间休息约 1 分钟。</p>${STRENGTH.map(([a,b],i)=>det('st'+i,`<span>${a}</span>`,`<p>${esc(b)}</p>`)).join('')}${sp?'<p class="hint" style="margin-top:8px">腰椎恢复期：先做动作库里无痛的稳定类动作，负重要等康复师同意。</p>':''}</section>`;
+ h+=`<section class="card"><h2>运动前后</h2>${ul(['热身 5 分钟：慢走、活动关节','运动后放松 5 分钟，做轻柔拉伸','运动中出现胸闷、胸痛、头晕，立即停止','有慢性病或长期没运动，先和医生商量'])}</section>`;
+ if(sp){h+=`<section class="card"><h2>哪些运动适合腰椎恢复期</h2><p class="hint" style="margin-bottom:6px">仅供参考，以康复师意见为准</p>${SPORTS.map(([n,t,x])=>`<div class="rowi" style="padding:10px 0;min-height:0;align-items:flex-start"><span class="rt"><b>${n}</b><small>${x}</small></span><span class="tag ${t==='友好'?'ok':t==='暂缓'?'bad':'warn'}">${t}</span></div>`).join('')}</section>`}
+ return h}
+
+function planDiet(){
+ const wt=latestOf('wt'),wc=latestOf('wc'),ht=+S.height||null;
+ let goal='<p class="hint">到「我的」页填入体重和身高后，这里会自动计算你的目标。</p>';
+ if(wt){const lo=Math.round(wt*1.2),hi=Math.round(wt*1.6);
+  goal=`<div class="stat"><span>蛋白质（约 1.2–1.6 g/kg）</span><b>${lo}–${hi} g/天</b></div>
+  <div class="stat"><span>平均每餐</span><b>约 ${Math.round(lo/3)}–${Math.round(hi/3)} g</b></div>
+  <div class="stat"><span>饮水</span><b>1500–1700 ml</b></div>`;
+  if(ht){const bmi=wt/((ht/100)**2),c=bmi<18.5?'偏瘦':bmi<24?'正常范围':bmi<28?'超重':'肥胖';
+   goal+=`<div class="stat"><span>BMI（按中国成人标准）</span><b>${f1(bmi)}（${c}）</b></div>`;
+   if(wc){const r=wc/ht,th=S.sex==='m'?90:S.sex==='f'?85:null;
+    goal+=`<div class="stat"><span>腰围 / 身高</span><b>${(Math.round(r*100)/100).toFixed(2)}${r>=0.5?'（偏高，建议关注）':'（<0.5）'}</b></div>`;
+    if(th)goal+=`<div class="stat"><span>腰围（${S.sex==='m'?'男':'女'}性 <${th} cm）</span><b>${wc} cm${wc>=th?'（偏高）':''}</b></div>`}}
+  goal+=`<p class="hint" style="margin-top:8px">蛋白质范围适用于肾功能正常的成人；肾功能不好请先问医生。数值仅供参考。</p>`}
+ let h=`<section class="card"><h2>我的目标：${GOAL_N[S.goal]||'维持健康'}</h2>${goal}<div style="margin-top:12px">${ul(GOAL_TIPS[S.goal]||GOAL_TIPS.keep)}</div></section>`;
+ h+=`<section class="card"><h2>营养均衡：七类食物</h2><p class="hint" style="margin-bottom:6px">每天都吃到，比某一样吃得多更重要。点开看每份多少、吃什么。</p>${GROUPS.map(g=>det('g-'+g.k,`<span>${g.n}</span><span class="tags"><span class="tag">${g.lo}${g.hi>g.lo?'–'+g.hi:''} 份/天</span></span>`,`<h4>1 份是多少</h4><p>${esc(g.unit)}</p><h4>常见食物</h4><p>${esc(g.eg)}</p><h4>作用</h4><p>${esc(g.role)}</p>`)).join('')}<p class="hint" style="margin-top:8px">另外还有三项：主食里有全谷物和杂豆、一半蔬菜是深色的、每天吃够 12 种以上不同的食物。「今日」页的营养分就是按这 10 项来算。</p></section>`;
+ h+=`<section class="card"><h2>餐盘法</h2><p class="hint" style="margin-bottom:6px">不数卡路里，每餐大致这样分：</p>
+ <div class="stat"><span>蔬菜</span><b>半盘，绿叶菜为主</b></div>
+ <div class="stat"><span>优质蛋白</span><b>1/4 盘</b></div>
+ <div class="stat"><span>主食</span><b>1/4 盘，一半是杂粮</b></div>
+ <div class="stat"><span>油脂</span><b>拇指大小一份</b></div></section>`;
+ h+=`<section class="card"><h2>每日参考量</h2><p class="hint" style="margin-bottom:4px">参考《中国居民膳食指南（2022）》，成人，生重</p>${FOOD_REF.map(([a,b])=>`<div class="stat"><span>${a}</span><b>${b}</b></div>`).join('')}</section>`;
+ h+=`<section class="card"><h2>三餐怎么安排</h2>${MEAL_OPT.map(([t,a],i)=>det('m'+i,`<span>${t}</span>`,ul(a))).join('')}</section>`;
+ h+=`<section class="card"><h2>一周示例</h2><table><tr><th>日</th><th>午餐</th><th>晚餐</th></tr>${WEEK_PLAN.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</table><p class="hint" style="margin-top:8px">每周 2 次鱼。早餐从上面三选一轮换，加餐饿了再吃。</p></section>`;
+ h+=`<section class="card"><h2>蛋白质速查</h2><p class="hint" style="margin-bottom:4px">约值</p>${FOOD_PROT.map(([a,b])=>`<div class="stat"><span>${a}</span><b>${b}</b></div>`).join('')}</section>`;
+ h+=`<section class="card"><h2>重要的营养素</h2>${NUTR.map(([a,b])=>det('n'+a,`<span>${a}</span>`,`<p>${esc(b)}</p>`)).join('')}<p class="hint" style="margin-top:8px">保健品和补剂请先问医生，不要自己加量。</p></section>`;
+ h+=`<section class="card"><h2>尽量少吃</h2>${ul(SKIP)}</section>`;
+ h+=`<section class="card"><h2>外出就餐</h2>${ul(['点蒸、煮、炖、凉拌，少点油炸、红烧、糖醋','先吃蔬菜，再吃肉，最后吃主食','汤泡饭、勾芡汤少碰；饮料选无糖茶或白水','聚餐前别饿太久，避免吃得过快'])}</section>`;
+ return h}
+
+function renderPlan(){
+ const subs=[['diet','饮食'],['move','运动'],['sleep','睡眠'],['post','姿势']];
+ if(S.mods.spine)subs.push(['ex','腰椎']);
+ if(!subs.some(s=>s[0]===planSub))planSub='diet';
+ return `<section style="margin:6px 16px 0"><div class="seg">${subs.map(([k,n])=>`<button data-act="sub" data-v="${k}" class="${planSub===k?'on':''}">${n}</button>`).join('')}</div></section>
+ <div class="foot">以下为通用参考，不能替代医生或康复师为你定的方案；不一致时，以他们的为准。</div>`+({diet:planDiet,move:planMove,sleep:planSleep,post:planPost,ex:planEx}[planSub])()}
+
+</script>
+<script>
+const KEY='lumbarHelper.v1';
+const LOCS=['不痛','仅腰部','到臀部','到大腿','到小腿/脚'];
+const TRIG=['久坐','弯腰','搬东西','开车','睡姿','咳嗽喷嚏','运动后','站太久','着凉'];
+const FEEL=['更好','一样','更差'];
+const SPORT_T=['快走 / 慢跑','骑行','游泳','力量训练','瑜伽 / 拉伸','球类','其他'];
+const PHASES=[
+ {n:'阶段一 · 稳定期',goal:'目标是减轻神经刺激、让症状稳定。以散步、呼吸、温和的稳定训练为主，避免弯腰负重和扭转。'},
+ {n:'阶段二 · 恢复期',goal:'在症状不反弹的前提下，逐步增加活动量和核心耐力。'},
+ {n:'阶段三 · 强化期',goal:'在康复师指导下逐步恢复力量训练和日常运动。'}];
+const DEF_EX=[
+ {id:'e1',libId:'walk',name:'散步',detail:'舒适速度，10–15 分钟起，逐步增加'},
+ {id:'e2',libId:'breath',name:'腹式呼吸',detail:'5–10 次 × 2–3 组，轻收腹'},
+ {id:'e3',libId:'bridge',name:'臀桥',detail:'8–10 次 × 2 组，顶点停 2–3 秒'},
+ {id:'e4',libId:'birddog',name:'鸟狗式',detail:'每侧 5–6 次，每次保持 5–8 秒'}];
+const DEF_HOLD=['弯腰搬重物','坐着转身拿东西','仰卧起坐 / 卷腹','负重深蹲 / 硬拉','跑步、跳跃','连续坐超过 1 小时'].map((n,i)=>({id:'h'+i,name:n,unlocked:false}));
+
+const ICONS={
+ rings:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/>',
+ book:'<path d="M5 4.5h10.5A3.5 3.5 0 0 1 19 8v11.5H8.5A3.5 3.5 0 0 1 5 16z"/><path d="M5 16a3.5 3.5 0 0 1 3.5-3.5H19"/>',
+ chart:'<path d="M4 19.5V5"/><path d="M4 19.5h16"/><path d="M8 15l3-4 3 2.5 4.5-6"/>',
+ spine:'<rect x="8.5" y="3" width="7" height="4.5" rx="2"/><rect x="8.5" y="9.75" width="7" height="4.5" rx="2"/><rect x="8.5" y="16.5" width="7" height="4.5" rx="2"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4.5 20c1.2-4.2 13.8-4.2 15 0"/>',
+ moon:'<path d="M20 14.2A8 8 0 0 1 9.8 4 8 8 0 1 0 20 14.2z"/>',
+ leaf:'<path d="M5 19c0-8.5 5.5-14 14-14.5 0 9-5.5 14.5-13.5 14.5"/><path d="M5 19c3-5.5 6-8.5 10-10.5"/>',
+ bolt:'<path d="M13 3 5.5 13.5H11L10 21l7.5-10.5H12z"/>',
+ smile:'<circle cx="12" cy="12" r="9"/><path d="M8.5 14c1 1.4 2.2 2 3.5 2s2.5-.6 3.5-2"/><path d="M9 9.5h.01M15 9.5h.01"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+ chev:'<path d="M9 6l6 6-6 6"/>',
+ back:'<path d="M15 6l-6 6 6 6"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
+const ic=(n,s=20)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg>`;
+
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parse=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
+const addDays=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return ymd(d)};
+const today=()=>ymd(new Date());
+const WK='日一二三四五六';
+const md=s=>{const d=parse(s);return (d.getMonth()+1)+'/'+d.getDate()};
+const wday=s=>'周'+WK[parse(s).getDay()];
+const mondayOf=s=>{const d=parse(s);d.setDate(d.getDate()-(d.getDay()+6)%7);return ymd(d)};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const avg=a=>a.length?a.reduce((s,v)=>s+v,0)/a.length:null;
+const f1=v=>v==null?'—':String(Math.round(v*10)/10);
+const lastN=(n,end=today())=>{const r=[];for(let i=n-1;i>=0;i--)r.push(addDays(end,-i));return r};
+
+function blank(){return{version:3,days:{},weekly:{},exercises:JSON.parse(JSON.stringify(DEF_EX)),holds:JSON.parse(JSON.stringify(DEF_HOLD)),phase:0,sitMin:40,height:'',sex:'',goal:'keep',mods:{spine:true}}}
+function load(){try{const r=localStorage.getItem(KEY);if(r)return Object.assign(blank(),JSON.parse(r))}catch(e){}return blank()}
+function emptyDay(){return{sleepStart:'',sleepEnd:'',nWake:null,stiff:null,sleep:null,
+ diet:{sv:{grain:0,veg:0,fruit:0,prot:0,milk:0,soy:0},whole:false,dark:false,fish:false,kinds:0,water:0,avoid:[]},
+ walk:0,sport:[],sportMin:0,sitMax:0,energy:null,mood:null,stress:null,note:'',
+ painAM:null,painPM:null,loc:null,numb:false,red:false,ex:{},trig:[],
+ tasks:[{t:'',done:false},{t:'',done:false},{t:'',done:false}]}}
+let S=load();migrate();
+function migrate(){
+ S.version=3;if(S.height==null)S.height='';if(S.sex==null)S.sex='';if(!S.goal)S.goal='keep';
+ if(!S.mods||typeof S.mods!=='object')S.mods={spine:true};if(S.mods.spine==null)S.mods.spine=true;
+ for(const k in S.days){const x=S.days[k],e=emptyDay();
+  for(const f in e){if(!(f in x))x[f]=e[f]}
+  if(!x.diet||typeof x.diet!=='object')x.diet=e.diet;
+  for(const f in e.diet){if(!(f in x.diet))x.diet[f]=e.diet[f]}
+  for(const f in e.diet.sv){if(!(f in x.diet.sv))x.diet.sv[f]=0}
+  x.walk=+x.walk||0;x.sitMax=+x.sitMax||0;x.sportMin=+x.sportMin||0}
+ (S.exercises||[]).forEach(ex=>{if(!ex.libId){const L=LIB.find(l=>l.name===ex.name);if(L){ex.libId=L.id;if(!ex.detail||/示例|舒适速度，从/.test(ex.detail))ex.detail=L.short}}})}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));flag('')}catch(e){flag('⚠ 这个浏览器无法保存数据，请到「我的」导出备份，或换 Chrome / Safari 打开')}}
+function flag(t){document.getElementById('saveflag').textContent=t}
+const D=d=>S.days[d]||emptyDay();
+const W=d=>S.days[d]||(S.days[d]=emptyDay());
+const moveMin=x=>(+x.walk||0)+(+x.sportMin||0);
+
+let cur=today(),tab='today',sheet=null,range=14;
+const timer={end:null,due:false};
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),1600)}
+
+/* ---------- 小部件 ---------- */
+function chips(items,sel,act,extra=''){return '<div class="chips">'+items.map((l,i)=>`<button class="chip ${sel(i,l)?'on':''} ${extra}" data-act="${act}" data-v="${i}">${esc(l)}</button>`).join('')+'</div>'}
+function lvl(k,v,labels){return '<div class="chips">'+labels.map((l,i)=>`<button class="chip ${v===i+1?'on':''}" data-act="lvl" data-k="${k}" data-v="${i+1}">${l}</button>`).join('')+'</div>'}
+function stp(k,val,step,cls=''){return `<div class="stp ${cls}"><button data-act="num" data-k="${k}" data-v="${-step}">−</button><b>${val}</b><button data-act="num" data-k="${k}" data-v="${step}">＋</button></div>`}
+function sw(act,v,on,cls=''){return `<button class="sw ${cls} ${on?'on':''}" data-act="${act}" data-v="${v}" aria-pressed="${!!on}"></button>`}
+function painRow(k,v){let h='<div class="scale">';for(let i=0;i<=10;i++){const c=i<=3?'lo':i<=6?'mid':'hi';h+=`<button data-act="pain" data-k="${k}" data-v="${i}" class="${v===i?'on '+c:''}">${i}</button>`}return h+'</div>'}
+function ring(vals){let s='<svg viewBox="0 0 150 150" class="rings">';
+ vals.forEach((v,i)=>{const w=13,r=66-i*(w+4),C=2*Math.PI*r,p=Math.max(0,Math.min(1,v.p));
+  s+=`<circle cx="75" cy="75" r="${r}" fill="none" stroke="${v.c}" stroke-opacity=".2" stroke-width="${w}"/>`;
+  if(p>0)s+=`<circle cx="75" cy="75" r="${r}" fill="none" stroke="${v.c}" stroke-width="${w}" stroke-linecap="round" stroke-dasharray="${(C*p).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 75 75)"/>`});
+ return s+'</svg>'}
+
+/* ---------- 今日：首页 ---------- */
+const DOM=[
+ {k:'sleep',n:'睡眠',i:'moon',c:'--c-sleep'},{k:'diet',n:'饮食',i:'leaf',c:'--c-food'},{k:'move',n:'运动',i:'bolt',c:'--c-move'},
+ {k:'mood',n:'状态',i:'smile',c:'--c-mood'},{k:'spine',n:'腰椎',i:'spine',c:'--c-spine',mod:'spine'},{k:'tasks',n:'今日三件事',i:'check',c:'--acc'}];
+function domSum(k,d){switch(k){
+ case 'sleep':{const h=sleepHrs(d);return h==null?['记录昨晚的睡眠',false]:[`${f1(h)} 小时${d.nWake?` · 夜醒 ${d.nWake} 次`:''}${d.sleep?` · 质量 ${d.sleep}/5`:''}`,true]}
+ case 'diet':{const sc=dietScore(d);if(sc==null)return['记录今天吃了什么',false];const g=dietGaps(d).filter(x=>!x.over);return[`营养 ${sc}/10 · ${g.length?'还差 '+g.slice(0,3).map(x=>x.n).join('、'):'很均衡'}`,true]}
+ case 'move':{const m=moveMin(d);return m>0?[`共 ${m} 分钟${(d.sport||[]).length?' · '+d.sport.join('、'):''}`,true]:['记录今天的运动',false]}
+ case 'mood':{const p=[];if(d.energy)p.push('精力 '+d.energy);if(d.mood)p.push('心情 '+d.mood);if(d.stress)p.push('压力 '+d.stress);return p.length?[p.join(' · '),true]:['精力、心情、压力',false]}
+ case 'spine':{if(d.painAM==null&&d.painPM==null)return['记录疼痛和康复训练',false];const n=S.exercises.filter(e=>d.ex[e.id]?.done).length;return[`早 ${d.painAM??'—'} · 晚 ${d.painPM??'—'}${d.loc==null?'':' · '+LOCS[d.loc]} · 训练 ${n}/${S.exercises.length}`,true]}
+ case 'tasks':{const f=d.tasks.filter(t=>t.t).length,dn=d.tasks.filter(t=>t.t&&t.done).length;return f?[`${dn}/${f} 已完成`,dn===f]:['最重要的三件事',false]}}}
+
+function timerRow(){
+ if(cur!==today())return'';const on=!!timer.end;
+ const btn=timer.due?`<button class="btn sm" data-act="tstart">重新计时</button>`:on?`<button class="btn sm ghost" data-act="tstop">停止</button>`:`<button class="btn sm ghost" data-act="tstart">开始</button>`;
+ return `<section class="group ${timer.due?'due':''}"><div class="rowi"><span class="ico" style="background:var(--c-move)">${ic('clock')}</span><span class="rt"><b>${timer.due?'该起身活动 2–3 分钟了':'久坐提醒'}</b><small id="tleft">${on?'':timer.due?'走一走、伸展一下再坐下':'每 '+S.sitMin+' 分钟提醒一次（页面需保持打开）'}</small></span>${btn}</div></section>`}
+
+function renderHome(d){
+ const sh=sleepHrs(d),sc=dietScore(d),mv=moveMin(d);let h='';
+ if(S.mods.spine&&d.red)h+=`<div class="alert">⚠ 你勾选了红旗症状。会阴部麻木、大小便异常或腿部无力加重，需要<b>尽快就医</b>，不要等待观察。</div>`;
+ h+=`<section class="card hero">${ring([{p:(sh||0)/8,c:'var(--c-sleep)'},{p:(sc||0)/10,c:'var(--c-food)'},{p:mv/30,c:'var(--c-move)'}])}
+ <div class="leg"><div><span style="color:var(--c-sleep)">睡眠</span><p style="margin:0"><b>${sh==null?'—':f1(sh)}</b><u>小时</u></p></div>
+ <div><span style="color:var(--c-food)">营养</span><p style="margin:0"><b>${sc==null?'—':sc}</b><u>/ 10</u></p></div>
+ <div><span style="color:var(--c-move)">运动</span><p style="margin:0"><b>${mv||'—'}</b><u>分钟</u></p></div></div></section>`;
+ h+='<section class="group">'+DOM.filter(x=>!x.mod||S.mods[x.mod]).map(x=>{const[t,done]=domSum(x.k,d);
+  return `<button class="rowi" data-act="open" data-v="${x.k}"><span class="ico" style="background:var(${x.c})">${ic(x.i)}</span><span class="rt"><b>${x.n}</b><small>${esc(t)}</small></span>${done?`<span class="dn">${ic('check',18)}</span>`:''}<span class="chev">${ic('chev',16)}</span></button>`}).join('')+'</section>';
+ return h+timerRow()}
+
+/* ---------- 今日：各记录页 ---------- */
+function sleepSheet(d){const sp=S.mods.spine;
+ return `<section class="card"><div class="two"><label>入睡<input type="time" data-f="sleepStart" value="${esc(d.sleepStart)}"></label><label>起床<input type="time" data-f="sleepEnd" value="${esc(d.sleepEnd)}"></label></div><div class="big2" id="slh">${sleepLine(d)}</div></section>
+ <section class="card"><h3>睡眠质量</h3>${lvl('sleep',d.sleep,['很差','较差','一般','较好','很好'])}</section>
+ <section class="card"><h3>夜里醒来几次</h3>${chips(['没有','1 次','2 次','3 次以上'],i=>d.nWake===i,'wake')}${sp?`<h3 style="margin-top:18px">早上腰部僵硬多久</h3>${chips(STIFF,i=>d.stiff===i,'stiff')}`:''}</section>`}
+
+function dietSheet(d){const t=d.diet,sc=dietScore(d),gaps=dietGaps(d);
+ let h=`<section class="card"><div class="big">${sc==null?'—':sc}<span class="u"> / 10</span></div><div class="big2" style="margin-top:6px">今日营养均衡</div>`;
+ if(sc==null)h+='<p class="hint" style="margin-top:12px">按手掌、拳头估量，不用称。吃了就点“＋”记一份，下面会告诉你还差什么。</p>';
+ else if(!gaps.length)h+='<p class="good">今天吃得很均衡。</p>';
+ else h+=`<ul class="gap">${gaps.map(g=>`<li><b>${g.n}</b><span>${esc(g.tip)}</span></li>`).join('')}</ul>`;
+ h+='</section><div class="foot" style="margin:-4px 20px 0">1 份就是下面写的量，按手掌、拳头估量即可。</div><section class="group">'+GROUPS.map(g=>{const n=t.sv[g.k],st=n>=g.lo?(n>g.hi&&g.k!=='veg'?'high':'ok'):'';
+  return `<div class="rowi"><span class="rt"><b>${g.n}</b><small>目标 ${g.lo}${g.hi>g.lo?'–'+g.hi:''} 份 · ${esc(g.unit.replace(/^1 份 ≈ /,''))}</small></span>${stp('sv.'+g.k,n,1,st)}</div>`}).join('')+'</section>';
+ h+=`<section class="group">
+ <div class="rowi"><span class="rt"><b>全谷物和杂豆</b><small>主食里有糙米、燕麦、玉米或杂豆</small></span>${sw('dflag','whole',t.whole)}</div>
+ <div class="rowi"><span class="rt"><b>深色蔬菜占一半以上</b><small>深绿、橙红、紫色</small></span>${sw('dflag','dark',t.dark)}</div>
+ <div class="rowi"><span class="rt"><b>鱼 / 海鲜</b><small>每周至少 2 次</small></span>${sw('dflag','fish',t.fish)}</div>
+ <div class="rowi"><span class="rt"><b>食物种类</b><small>一天不同的食物，目标 12 种以上</small></span>${stp('kinds',t.kinds,1,t.kinds>=12?'ok':'')}</div>
+ <div class="rowi"><span class="rt"><b>饮水</b><small>每杯约 250 ml，目标 6–7 杯</small></span>${stp('water',t.water,1,t.water>=6?'ok':'')}</div></section>`;
+ h+=`<section class="card"><h3>今天有没有（越少越好）</h3><div class="chips">${AVOID.map(a=>`<button class="chip warn ${t.avoid.includes(a)?'on':''}" data-act="avoid" data-v="${a}">${a}</button>`).join('')}</div></section>`;
+ return h}
+
+function moveSheet(d){
+ const r=stats(lastN(7));
+ return `<section class="group">
+ <div class="rowi"><span class="rt"><b>散步 / 快走</b><small>分钟</small></span>${stp('walk',d.walk,5)}</div>
+ <div class="rowi"><span class="rt"><b>其他运动</b><small>分钟</small></span>${stp('sportMin',d.sportMin,5)}</div>
+ <div class="rowi"><span class="rt"><b>最长连续坐</b><small>分钟，越短越好</small></span>${stp('sitMax',d.sitMax,15)}</div></section>
+ <section class="card"><h3>运动类型</h3><div class="chips">${SPORT_T.map(s=>`<button class="chip ${d.sport.includes(s)?'on':''}" data-act="sport" data-v="${s}">${s}</button>`).join('')}</div></section>
+ <section class="card"><h3>近 7 天</h3><div class="big">${r.mvTot}<span class="u"> 分钟</span></div><div class="big2">每周目标：中等强度 150–300 分钟</div></section>`}
+
+function moodSheet(d){
+ return `<section class="card"><h3>精力</h3>${lvl('energy',d.energy,['很低','较低','一般','较好','充沛'])}</section>
+ <section class="card"><h3>心情</h3>${lvl('mood',d.mood,['很差','较差','一般','较好','很好'])}</section>
+ <section class="card"><h3>压力</h3>${lvl('stress',d.stress,['很小','较小','一般','较大','很大'])}</section>
+ <section class="card"><h3>备注</h3><textarea data-f="note" style="margin-top:0" placeholder="今天特别的事、身体的变化……">${esc(d.note)}</textarea></section>`}
+
+function spineSheet(d){const ph=PHASES[S.phase];
+ let h='';
+ if(d.red)h+=`<div class="alert">⚠ 你勾选了红旗症状。会阴部麻木、大小便异常或腿部无力加重，需要<b>尽快就医</b>，不要等待观察。</div>`;
+ h+=`<section class="card"><h3>疼痛 · 0 不痛，10 最痛</h3><div class="lb">早上</div>${painRow('painAM',d.painAM)}<div class="lb">晚上</div>${painRow('painPM',d.painPM)}<div class="lb">疼痛最远到哪里</div>${chips(LOCS,i=>d.loc===i,'loc')}</section>
+ <section class="group"><div class="rowi"><span class="rt"><b>腿或脚有麻木感</b></span>${sw('dflag2','numb',d.numb)}</div>
+ <div class="rowi"><span class="rt"><b style="color:var(--warn)">会阴部麻木 / 大小便异常 / 腿越来越没力</b><small>出现任何一项，请尽快就医</small></span>${sw('dflag2','red',d.red,'red')}</div></section>`;
+ h+=`<section class="card"><h3>康复训练 · ${esc(ph.n)}</h3>`;
+ S.exercises.forEach(e=>{const x=d.ex[e.id]||{};
+  h+=`<div class="ex"><button class="tk ${x.done?'on':''}" data-act="exdone" data-id="${e.id}">${x.done?ic('check',16):''}</button><div class="exb"><div class="exn">${esc(e.name)}${e.libId?`<button class="lnk" data-act="goex" data-id="${e.libId}">要点›</button>`:''}</div><div class="hint">${esc(e.detail)}</div>${x.done?`<div class="chips" style="margin-top:8px">${FEEL.map((f,i)=>`<button class="chip sm ${x.feel===i?'on'+(i===2?' f2':''):''}" data-act="exfeel" data-id="${e.id}" data-v="${i}">做完${f}</button>`).join('')}</div>`:''}</div></div>`});
+ if(!S.exercises.length)h+='<p class="hint">到「方案 · 腰椎」添加动作，或在「腰椎」页自己添加。</p>';
+ h+='</section>';
+ h+=`<section class="card"><h3>诱因 · 哪些情况让症状变重</h3><div class="chips">${TRIG.map(t=>`<button class="chip warn ${d.trig.includes(t)?'on':''}" data-act="trig" data-v="${t}">${t}</button>`).join('')}</div></section>`;
+ return h}
+
+function tasksSheet(d){
+ return `<section class="card"><h3>只放最重要的三件</h3>${d.tasks.map((t,i)=>`<div class="task"><button class="tk ${t.done?'on':''}" data-act="task" data-i="${i}">${t.done?ic('check',16):''}</button><input data-f="task:${i}" value="${esc(t.t)}" placeholder="第 ${i+1} 件"></div>`).join('')}</section>`}
+
+function renderToday(){const d=D(cur);if(!sheet)return renderHome(d);
+ return {sleep:sleepSheet,diet:dietSheet,move:moveSheet,mood:moodSheet,spine:spineSheet,tasks:tasksSheet}[sheet](d)}
+
+/* ---------- 统计 ---------- */
+function stats(ds){
+ const r={rec:0,logged:0,am:[],pm:[],max:null,maxLoc:null,numb:0,red:0,walk:[],sit:[],mv:[],mvTot:0,mvDays:0,sleepH:[],wake:[],stiff:[],sq:[],energy:[],mood:[],stress:[],dscore:[],dn:0,meet:{},water:[],kinds:[],fish:0,avoid:{},trig:{},ex:{},tasks:[0,0],sport:{}};
+ for(const d of ds){const x=S.days[d];if(!x)continue;let any=false;
+  if(x.painAM!=null||x.painPM!=null){r.rec++;any=true}
+  [x.painAM,x.painPM].forEach(v=>{if(v!=null)r.max=Math.max(r.max??0,v)});
+  if(x.painAM!=null)r.am.push(x.painAM);if(x.painPM!=null)r.pm.push(x.painPM);
+  if(x.loc!=null)r.maxLoc=Math.max(r.maxLoc??0,x.loc);
+  if(x.numb)r.numb++;if(x.red)r.red++;
+  const sh=sleepHrs(x);if(sh!=null){r.sleepH.push(sh);any=true}
+  if(x.nWake!=null)r.wake.push(x.nWake);if(x.stiff!=null)r.stiff.push(x.stiff);if(x.sleep)r.sq.push(x.sleep);
+  if(x.energy){r.energy.push(x.energy);any=true}if(x.mood){r.mood.push(x.mood);any=true}if(x.stress){r.stress.push(x.stress);any=true}
+  const mv=moveMin(x);if(mv>0){r.mv.push(mv);r.mvTot+=mv;r.mvDays++;any=true}
+  if(+x.walk>0)r.walk.push(+x.walk);if(+x.sitMax>0)r.sit.push(+x.sitMax);
+  (x.sport||[]).forEach(s=>r.sport[s]=(r.sport[s]||0)+1);
+  const sc=dietScore(x);if(sc!=null){const t=x.diet;r.dscore.push(sc);r.dn++;any=true;ITEMS.forEach(i=>{r.meet[i.k]=(r.meet[i.k]||0)+(i.ok(t)?1:0)});r.water.push(t.water||0);if(t.kinds)r.kinds.push(t.kinds);if(t.fish)r.fish++;(t.avoid||[]).forEach(a=>r.avoid[a]=(r.avoid[a]||0)+1)}
+  (x.trig||[]).forEach(t=>r.trig[t]=(r.trig[t]||0)+1);
+  for(const id in(x.ex||{})){const e=x.ex[id];if(e.done){const o=r.ex[id]=r.ex[id]||{done:0,f:[0,0,0]};o.done++;if(e.feel!=null)o.f[e.feel]++}}
+  (x.tasks||[]).forEach(t=>{if(t.t){r.tasks[1]++;if(t.done)r.tasks[0]++}});
+  if(any)r.logged++}
+ return r}
+const exName=id=>(S.exercises.find(e=>e.id===id)||{name:'(已删除动作)'}).name;
+const topTrig=r=>Object.entries(r.trig).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([t,n])=>`${t}×${n}`).join('、')||'无';
+function adherence(r,days){const tot=S.exercises.length*days;if(!tot)return null;let d=0;S.exercises.forEach(e=>{d+=(r.ex[e.id]?.done||0)});return Math.round(d/tot*100)}
+function weakItems(r){if(!r.dn)return[];return ITEMS.map(i=>({n:i.n,k:i.k,p:(r.meet[i.k]||0)/r.dn})).filter(i=>i.p<.6).sort((a,b)=>a.p-b.p)}
+
+/* ---------- 趋势 ---------- */
+function chart(days,series,o){
+ const Wd=340,H=150,pl=34,pr=8,pt=10,pb=22,n=days.length,iw=Wd-pl-pr,ih=H-pt-pb,max=o.max,mn=o.min||0;
+ const X=i=>o.bars?pl+iw*(i+.5)/n:pl+(n>1?iw*i/(n-1):iw/2);
+ const Y=v=>pt+ih*(1-(Math.min(Math.max(v,mn),max)-mn)/(max-mn));
+ let s=`<svg viewBox="0 0 ${Wd} ${H}" class="chart">`;
+ (o.ticks||[[mn,String(mn)],[(mn+max)/2,f1((mn+max)/2)],[max,String(max)]]).forEach(([v,l])=>{s+=`<line x1="${pl}" x2="${Wd-pr}" y1="${Y(v)}" y2="${Y(v)}" class="grid"/><text x="${pl-5}" y="${Y(v)+3.5}" class="tk2" text-anchor="end">${l}</text>`});
+ [...new Set([0,Math.floor((n-1)/2),n-1])].forEach(i=>{s+=`<text x="${X(i)}" y="${H-6}" class="tk2" text-anchor="middle">${md(days[i])}</text>`});
+ series.forEach(se=>{
+  if(o.bars){const bw=Math.max(3,iw/n*.6);se.v.forEach((v,i)=>{if(v)s+=`<rect x="${X(i)-bw/2}" y="${Y(v)}" width="${bw}" height="${pt+ih-Y(v)}" rx="2" fill="${se.c}"/>`})}
+  else{let p='',pen=false,dots='';se.v.forEach((v,i)=>{if(v==null){pen=false;return}p+=(pen?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1);pen=true;dots+=`<circle cx="${X(i)}" cy="${Y(v)}" r="2.8" fill="${se.c}"/>`});s+=`<path d="${p}" fill="none" stroke="${se.c}" stroke-width="2" stroke-linejoin="round"/>`+dots}});
+ return s+'</svg>'}
+function cardChart(title,sub,svg,legend=''){return `<section class="card"><h3>${title}</h3>${sub?`<div class="big2" style="margin:-4px 0 8px">${sub}</div>`:''}${svg}${legend}</section>`}
+
+function renderTrend(){
+ const days=lastN(range),g=k=>days.map(d=>S.days[d]?.[k]??null);
+ const a=stats(lastN(7)),b=stats(lastN(7,addDays(today(),-7))),sp=S.mods.spine;
+ const A=stats(days);
+ let h=`<section style="margin:6px 16px 0"><div class="seg">${[7,14,30].map(n=>`<button data-act="range" data-v="${n}" class="${range===n?'on':''}">近 ${n} 天</button>`).join('')}</div></section>`;
+ h+=cardChart('睡眠（小时）',`平均 ${f1(avg(A.sleepH))} 小时`,chart(days,[{v:days.map(d=>S.days[d]?sleepHrs(S.days[d]):null),c:'var(--c-sleep)'}],{max:10,bars:true,ticks:[[0,'0'],[5,'5'],[7,'7'],[10,'10']]}));
+ h+=cardChart('营养均衡（满分 10）',`平均 ${f1(avg(A.dscore))} 分`,chart(days,[{v:days.map(d=>S.days[d]?dietScore(S.days[d]):null),c:'var(--c-food)'}],{max:10,bars:true,ticks:[[0,'0'],[5,'5'],[10,'10']]}));
+ const mvs=days.map(d=>S.days[d]?moveMin(S.days[d])||null:null);
+ h+=cardChart('运动（分钟）',`近 7 天共 ${a.mvTot} 分钟，目标 150–300`,chart(days,[{v:mvs,c:'var(--c-move)'}],{max:Math.max(60,...mvs.filter(v=>v))+0,bars:true}));
+ h+=cardChart('精力 · 心情 · 压力','',chart(days,[{v:g('energy'),c:'var(--c-move)'},{v:g('mood'),c:'var(--c-mood)'},{v:g('stress'),c:'var(--sub)'}],{max:5,min:1,ticks:[[1,'1'],[3,'3'],[5,'5']]}),`<div class="legend"><span><i style="background:var(--c-move)"></i>精力</span><span><i style="background:var(--c-mood)"></i>心情</span><span><i style="background:var(--sub)"></i>压力</span></div>`);
+ const wk=Object.keys(S.weekly).sort().filter(k=>+S.weekly[k].wt>0).slice(-12);
+ if(wk.length>=2){const ws=wk.map(k=>+S.weekly[k].wt),mn=Math.floor(Math.min(...ws)-1),mx=Math.ceil(Math.max(...ws)+1);
+  h+=cardChart('体重（kg，每周）',`最近 ${ws[ws.length-1]} kg`,chart(wk,[{v:ws,c:'var(--acc)'}],{max:mx,min:mn,ticks:[[mn,String(mn)],[(mn+mx)/2,f1((mn+mx)/2)],[mx,String(mx)]]}))}
+ if(sp){
+  h+=cardChart('疼痛',`近 7 天早 ${f1(avg(a.am))} · 晚 ${f1(avg(a.pm))}`,chart(days,[{v:g('painAM'),c:'var(--c-spine)'},{v:g('painPM'),c:'var(--c-sleep)'}],{max:10,ticks:[[0,'0'],[3,'3'],[6,'6'],[10,'10']]}),`<div class="legend"><span><i style="background:var(--c-spine)"></i>早上</span><span><i style="background:var(--c-sleep)"></i>晚上</span></div>`);
+  h+=cardChart('疼痛最远位置','越低越好，回收到腰部是好转信号',chart(days,[{v:g('loc'),c:'var(--amber)'}],{max:4,ticks:[[0,'不痛'],[1,'腰'],[2,'臀'],[3,'大腿'],[4,'小腿']]}))}
+ const cmp=(x,y,lowGood)=>{if(x==null||y==null)return'';const dlt=x-y;if(Math.abs(dlt)<.3)return' <span class="hint">持平</span>';const good=lowGood?dlt<0:dlt>0;return `<span class="${good?'ok':'bad'}"> ${dlt>0?'↑':'↓'}${f1(Math.abs(dlt))}</span>`};
+ h+=`<section class="card"><h2>近 7 天小结</h2>
+ <div class="stat"><span>记录天数</span><b>${a.logged}/7</b></div>
+ <div class="stat"><span>平均睡眠</span><b>${f1(avg(a.sleepH))} 小时${cmp(avg(a.sleepH),avg(b.sleepH),false)}</b></div>
+ <div class="stat"><span>营养均衡</span><b>${f1(avg(a.dscore))} / 10${cmp(avg(a.dscore),avg(b.dscore),false)}</b></div>
+ <div class="stat"><span>运动合计</span><b>${a.mvTot} 分钟 · ${a.mvDays} 天</b></div>
+ <div class="stat"><span>心情 / 压力</span><b>${f1(avg(a.mood))} / ${f1(avg(a.stress))}</b></div>
+ <div class="stat"><span>平均饮水</span><b>${f1(avg(a.water))} 杯</b></div>
+ <div class="stat"><span>鱼 / 海鲜</span><b>${a.fish} 天（目标每周 ≥2）</b></div>
+ <div class="stat"><span>少做清单</span><b class="${Object.keys(a.avoid).length?'bad':''}">${avoidText(a)}</b></div>
+ <div class="stat"><span>三件事完成</span><b>${a.tasks[0]}/${a.tasks[1]}</b></div></section>`;
+ if(a.dn){const w=weakItems(a);
+  h+=`<section class="card"><h2>营养均衡 · 近 7 天</h2><p class="hint" style="margin-bottom:8px">每一项达标的天数占比（共 ${a.dn} 天有记录）</p>${ITEMS.map(i=>{const p=(a.meet[i.k]||0)/a.dn;return `<div class="mbar"><span>${i.n}</span><i style="--w:${Math.round(p*100)}%"></i><em>${a.meet[i.k]||0}/${a.dn}</em></div>`}).join('')}
+  <div class="verdict ${w.length?'no':'ok2'}">${w.length?'本周常缺：'+w.slice(0,3).map(x=>x.n).join('、')+'。下周每天先把这几样补上，再考虑其他。':'这周营养比较均衡，继续保持。'}</div></section>`}
+ if(sp){const ad=adherence(a,Math.max(a.rec,1));const worse=Object.entries(a.ex).filter(([,o])=>o.f[2]>0).map(([id,o])=>`${exName(id)}×${o.f[2]}`).join('、');
+  h+=`<section class="card"><h2>腰椎 · 近 7 天</h2>
+  <div class="stat"><span>最高疼痛 / 最远位置</span><b>${a.max??'—'} / ${a.maxLoc==null?'—':LOCS[a.maxLoc]}</b></div>
+  <div class="stat"><span>腿脚麻木</span><b class="${a.numb?'bad':''}">${a.numb} 天</b></div>
+  <div class="stat"><span>训练完成率</span><b>${ad==null?'—':ad+'%'}</b></div>
+  <div class="stat"><span>做完更差的动作</span><b class="${worse?'bad':''}">${worse||'无'}</b></div>
+  <div class="stat"><span>常见诱因</span><b>${topTrig(a)}</b></div>
+  <div class="stat"><span>最长连续坐（平均）</span><b>${f1(avg(a.sit))} 分钟</b></div></section>`}
+ return h}
+
+/* ---------- 腰椎 ---------- */
+function gate(){const r=stats(lastN(7));return[
+ ['近 7 天至少记录 5 天疼痛',r.rec>=5,r.rec+'/7'],
+ ['疼痛始终 ≤ 3 分',r.max!=null&&r.max<=3,'最高 '+(r.max??'—')],
+ ['疼痛不超出腰部',r.maxLoc!=null&&r.maxLoc<=1,r.maxLoc==null?'—':LOCS[r.maxLoc]],
+ ['没有腿脚麻木',r.numb===0,r.numb+' 天'],
+ ['没有红旗症状',r.red===0,r.red+' 天']]}
+function renderSpine(){
+ const ph=PHASES[S.phase];
+ let h=`<section class="card"><h2>当前阶段</h2><div class="seg" style="margin:10px 0">${PHASES.map((p,i)=>`<button data-act="phase" data-v="${i}" class="${S.phase===i?'on':''}">${p.n.split(' · ')[1]}</button>`).join('')}</div><p>${ph.goal}</p></section>`;
+ if(S.phase<2){const c=gate(),ok=c.every(x=>x[1]);
+  h+=`<section class="card"><h2>升级检查</h2><p class="hint" style="margin-bottom:6px">按近 7 天数据</p>${c.map(([t,p,v])=>`<div class="crit"><span>${p?'✅':'⬜'} ${t}</span><span class="hint">${v}</span></div>`).join('')}<div class="verdict ${ok?'ok2':'no'}">${ok?'已达到条件。先和医生或康复师确认，再切换到下一阶段。':'还没达到条件，继续当前阶段。不按日期硬推进。'}</div></section>`}
+ h+=`<section class="card"><h2>我的训练动作</h2><p class="hint" style="margin-bottom:6px">按医生或康复师的方案改</p>${S.exercises.map(e=>`<div class="edit"><input data-f="exn:${e.id}" value="${esc(e.name)}" placeholder="动作名称"><button class="x del" data-act="exdel" data-id="${e.id}">✕</button><input data-f="exd:${e.id}" value="${esc(e.detail)}" placeholder="组数、时长、注意事项"></div>`).join('')}<div class="btns"><button class="btn sm ghost" data-act="exadd">＋ 添加动作</button><button class="btn sm ghost" data-act="gotolib">从动作库添加</button></div></section>`;
+ h+=`<section class="card"><h2>暂缓清单</h2><p class="hint" style="margin-bottom:6px">康复师同意后再解锁</p>${S.holds.map(x=>`<div class="rowi" style="padding:10px 0;min-height:0"><span class="rt"><b style="font-weight:500">${esc(x.name)}</b></span><span><button class="pill ${x.unlocked?'open':'lock'}" data-act="hold" data-id="${x.id}">${x.unlocked?'已解锁':'暂缓'}</button><button class="x" data-act="holddel" data-id="${x.id}">✕</button></span></div>`).join('')}<div class="btns" style="flex-wrap:nowrap"><input id="holdin" placeholder="添加要暂缓的动作"><button class="btn sm ghost" data-act="holdadd">添加</button></div></section>`;
+ return h}
+
+/* ---------- 我的 ---------- */
+function renderMe(){
+ const m=mondayOf(today()),w=S.weekly[m]||{};
+ const hist=Object.keys(S.weekly).sort().reverse().slice(0,8);
+ let h=`<section class="group">
+ <div class="rowi"><span class="rt"><b>性别</b><small>用于参考腰围标准，可不填</small></span><div class="seg" style="width:150px">${[['m','男'],['f','女'],['','不填']].map(([v,l])=>`<button data-act="sex" data-v="${v}" class="${S.sex===v?'on':''}">${l}</button>`).join('')}</div></div>
+ <div class="rowi"><span class="rt"><b>身高</b><small>cm，只需填一次</small></span><input class="inl" type="number" inputmode="decimal" data-f="ht" value="${esc(S.height)}"></div>
+ <div class="rowi"><span class="rt"><b>体重</b><small>本周，kg</small></span><input class="inl" type="number" inputmode="decimal" step="0.1" data-f="wt" value="${esc(w.wt)}"></div>
+ <div class="rowi"><span class="rt"><b>腰围</b><small>本周，cm</small></span><input class="inl" type="number" inputmode="decimal" step="0.1" data-f="wc" value="${esc(w.wc)}"></div></section>
+ <section class="card"><h3>目标</h3><div class="seg">${Object.entries(GOAL_N).map(([k,n])=>`<button data-act="goal" data-v="${k}" class="${S.goal===k?'on':''}">${n}</button>`).join('')}</div></section>
+ <section class="group"><div class="rowi"><span class="rt"><b>腰椎康复模块</b><small>开启后，今日、方案、趋势里会出现腰椎相关内容</small></span>${sw('mod','spine',S.mods.spine)}</div>
+ <div class="rowi"><span class="rt"><b>久坐提醒间隔</b><small>分钟，5–120</small></span><input class="inl" type="number" inputmode="numeric" data-f="sitMin" value="${S.sitMin}"></div></section>
+ <section class="card"><h2>周报</h2><p class="hint">复制后发给 Claude 做复盘</p><div class="btns"><button class="btn sm" data-act="report">生成近 7 天周报</button><button class="btn sm ghost" data-act="copyrep">复制</button></div><textarea id="rep" readonly placeholder="点上面的按钮生成" style="min-height:120px"></textarea></section>`;
+ if(hist.length)h+=`<section class="card"><h2>体重与腰围记录</h2><table><tr><th>周</th><th>体重</th><th>腰围</th></tr>${hist.map(k=>`<tr><td>${md(k)}</td><td>${esc(S.weekly[k].wt||'—')}</td><td>${esc(S.weekly[k].wc||'—')}</td></tr>`).join('')}</table></section>`;
+ h+=`<section class="card"><h2>数据备份</h2><p class="hint">数据只存在这台手机的浏览器里。建议每周备份一次；清除浏览器数据或换手机前一定要先备份。</p>
+ <div class="btns"><button class="btn sm" data-act="export">导出备份文件</button><button class="btn sm ghost" data-act="import">导入备份</button></div>
+ <textarea id="bak" placeholder="iPhone 推荐：点“复制备份文本”，粘贴到备忘录保存。恢复时把文本粘贴到这里，再点“从文本导入”" style="min-height:72px"></textarea>
+ <div class="btns" style="margin-top:8px"><button class="btn sm ghost" data-act="copybak">复制备份文本</button><button class="btn sm ghost" data-act="txtimp">从文本导入</button></div>
+ <div class="btns"><button class="btn sm danger" data-act="reset">清空全部数据</button></div></section>
+ <p class="foot">本工具用于记录和观察趋势，不能替代医生诊断。饮食和运动建议是通用参考，有疾病或不适请遵医嘱。如出现会阴部麻木、大小便异常或腿部无力加重，请立即就医。</p>`;
+ return h}
+
+function report(){
+ const ds=lastN(7),a=stats(ds),b=stats(lastN(7,addDays(today(),-7))),sp=S.mods.spine;
+ const w=S.weekly[mondayOf(today())]||{};
+ const L=[`【健康周报】${md(ds[0])} ~ ${md(ds[6])}`,`记录天数：${a.logged}/7；目标：${GOAL_N[S.goal]}`,'',
+ '■ 睡眠',`平均 ${f1(avg(a.sleepH))} 小时（前一周 ${f1(avg(b.sleepH))}），质量 ${f1(avg(a.sq))}/5，夜醒平均 ${f1(avg(a.wake))} 次`+(sp?`，晨僵${stiffText(a)}`:''),'',
+ '■ 营养均衡',`平均 ${f1(avg(a.dscore))}/10（前一周 ${f1(avg(b.dscore))}）；常缺：${weakItems(a).slice(0,4).map(x=>x.n).join('、')||'无'}`,
+ `饮水平均 ${f1(avg(a.water))} 杯；食物种类平均 ${f1(avg(a.kinds))} 种；鱼/海鲜 ${a.fish} 天；少做清单：${avoidText(a)}`,'',
+ '■ 运动',`合计 ${a.mvTot} 分钟（目标 150–300），运动 ${a.mvDays} 天；类型：${Object.entries(a.sport).map(([k,n])=>k+'×'+n).join('、')||'—'}；最长连续坐平均 ${f1(avg(a.sit))} 分钟`,'',
+ '■ 状态',`精力 ${f1(avg(a.energy))}/5，心情 ${f1(avg(a.mood))}/5，压力 ${f1(avg(a.stress))}/5；三件事完成 ${a.tasks[0]}/${a.tasks[1]}`];
+ if(w.wt||w.wc){const ht=+S.height;L.push('','■ 身体数据',`体重 ${w.wt||'—'} kg，腰围 ${w.wc||'—'} cm`+(ht&&+w.wt?`，BMI ${f1(+w.wt/((ht/100)**2))}`:''))}
+ if(sp){L.push('',`■ 腰椎（${PHASES[S.phase].n}）`,
+  `疼痛：早上平均 ${f1(avg(a.am))}（前一周 ${f1(avg(b.am))}），晚上平均 ${f1(avg(a.pm))}（前一周 ${f1(avg(b.pm))}），最高 ${a.max??'—'}`,
+  `疼痛最远位置：${a.maxLoc==null?'—':LOCS[a.maxLoc]}；腿脚麻木 ${a.numb} 天；红旗症状 ${a.red} 天`,`训练完成率：${adherence(a,7)??'—'}%`);
+  S.exercises.forEach(e=>{const o=a.ex[e.id];L.push(`  · ${e.name}：${o?o.done:0}/7 次${o?`（更好${o.f[0]} 一样${o.f[1]} 更差${o.f[2]}）`:''}`)});
+  L.push(`诱因：${topTrig(a)}`)}
+ L.push('','逐日明细：');
+ ds.forEach(d=>{const x=S.days[d];if(!x){L.push(`${md(d)} ${wday(d)}：未记录`);return}
+  const sh=sleepHrs(x),sc=dietScore(x),p=[`睡${sh==null?'-':f1(sh)+'h'}`,`营养${sc==null?'-':sc+'/10'}`,`运动${moveMin(x)||'-'}分`];
+  if(sp){const ex=S.exercises.filter(e=>x.ex[e.id]?.done).map(e=>e.name+(x.ex[e.id].feel!=null?'('+FEEL[x.ex[e.id].feel]+')':'')).join(' ');
+   p.push(`疼痛早${x.painAM??'-'}晚${x.painPM??'-'}`,x.loc==null?'位置-':LOCS[x.loc]);if(x.numb)p.push('麻木');if(x.red)p.push('红旗!');p.push('训练：'+(ex||'无'));if(x.trig.length)p.push('诱因：'+x.trig.join('、'))}
+  if(x.note)p.push('备注：'+x.note);L.push(`${md(d)} ${wday(d)}：`+p.join('｜'))});
+ return L.join('\n')}
+
+/* ---------- 渲染与事件 ---------- */
+const NAV=[['today','今日','rings'],['plan','方案','book'],['trend','趋势','chart'],['spine','腰椎','spine'],['me','我的','user']];
+const TITLES={plan:'方案',trend:'趋势',spine:'腰椎',me:'我的'};
+function render(){
+ if(tab==='spine'&&!S.mods.spine)tab='today';
+ const isT=cur===today();let hd;
+ if(tab==='today'&&sheet){const t=DOM.find(x=>x.k===sheet);hd=`<div><button class="back" data-act="back">${ic('back',22)}${isT?'今天':md(cur)}</button><h1>${t.n}</h1></div>`}
+ else if(tab==='today'){hd=`<div><div class="sub">${md(cur)} ${wday(cur)}</div><h1>${isT?'今天':wday(cur)}</h1></div><div class="dnav"><button data-act="day" data-v="-1" aria-label="前一天">${ic('back',18)}</button>${isT?'':'<button class="today-btn" data-act="gotoday">今天</button>'}<button data-act="day" data-v="1" aria-label="后一天" ${isT?'disabled style="opacity:.3"':''}>${ic('chev',18)}</button></div>`}
+ else hd=`<div><h1>${TITLES[tab]}</h1></div>`;
+ document.getElementById('hdr').innerHTML=hd;
+ document.getElementById('app').innerHTML={today:renderToday,plan:renderPlan,trend:renderTrend,spine:renderSpine,me:renderMe}[tab]();
+ document.getElementById('nav').innerHTML=NAV.filter(n=>n[0]!=='spine'||S.mods.spine).map(([k,n,i])=>`<button data-tab="${k}" class="${tab===k?'on':''}">${ic(i,24)}<span>${n}</span></button>`).join('');
+ tickTimer()}
+
+function beep(){try{const c=new(window.AudioContext||window.webkitAudioContext)();[0,.35].forEach(t=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=880;g.gain.value=.2;o.connect(g);g.connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+.2)})}catch(e){}}
+function tickTimer(){
+ if(!timer.end)return;const left=timer.end-Date.now();
+ if(left<=0){timer.end=null;timer.due=true;try{navigator.vibrate&&navigator.vibrate([400,200,400])}catch(e){}beep();document.title='⏰ 该起身了';if(tab==='today'&&!sheet)render();else toast('⏰ 该起身活动一下了');return}
+ const el=document.getElementById('tleft');if(el){const s=Math.ceil(left/1000);el.textContent=`还有 ${pad(Math.floor(s/60))}:${pad(s%60)} 提醒起身`}}
+setInterval(tickTimer,1000);
+
+document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;tab=b.dataset.tab;sheet=null;window.scrollTo(0,0);render()});
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,v=b.dataset.v,id=b.dataset.id;let d;
+ switch(a){
+  case 'open':sheet=v;window.scrollTo(0,0);break;
+  case 'back':sheet=null;window.scrollTo(0,0);break;
+  case 'num':{d=W(cur);const[k,k2]=b.dataset.k.split('.');const lim={sv:[0,12],water:[0,20],kinds:[0,40],walk:[0,300],sportMin:[0,300],sitMax:[0,480]}[k];
+   const tgt=k==='sv'?d.diet.sv:(k==='water'||k==='kinds')?d.diet:d,key=k==='sv'?k2:k;
+   tgt[key]=Math.max(lim[0],Math.min(lim[1],(+tgt[key]||0)+(+v)));break}
+  case 'dflag':d=W(cur);d.diet[v]=!d.diet[v];break;
+  case 'dflag2':d=W(cur);d[v]=!d[v];break;
+  case 'avoid':d=W(cur);d.diet.avoid=d.diet.avoid.includes(v)?d.diet.avoid.filter(t=>t!==v):[...d.diet.avoid,v];break;
+  case 'sport':d=W(cur);d.sport=d.sport.includes(v)?d.sport.filter(t=>t!==v):[...d.sport,v];break;
+  case 'wake':d=W(cur);d.nWake=d.nWake===+v?null:+v;break;
+  case 'stiff':d=W(cur);d.stiff=d.stiff===+v?null:+v;break;
+  case 'pain':d=W(cur);d[b.dataset.k]=d[b.dataset.k]===+v?null:+v;break;
+  case 'loc':d=W(cur);d.loc=d.loc===+v?null:+v;break;
+  case 'lvl':d=W(cur);d[b.dataset.k]=d[b.dataset.k]===+v?null:+v;break;
+  case 'exdone':d=W(cur);d.ex[id]=d.ex[id]||{};d.ex[id].done=!d.ex[id].done;if(!d.ex[id].done)delete d.ex[id].feel;break;
+  case 'exfeel':d=W(cur);d.ex[id].feel=d.ex[id].feel===+v?null:+v;break;
+  case 'trig':d=W(cur);d.trig=d.trig.includes(v)?d.trig.filter(t=>t!==v):[...d.trig,v];break;
+  case 'task':d=W(cur);d.tasks[+b.dataset.i].done=!d.tasks[+b.dataset.i].done;break;
+  case 'day':cur=addDays(cur,+v);if(cur>today())cur=today();break;
+  case 'gotoday':cur=today();break;
+  case 'range':range=+v;break;
+  case 'phase':S.phase=+v;break;
+  case 'sex':S.sex=v;break;
+  case 'goal':S.goal=v;break;
+  case 'mod':S.mods[v]=!S.mods[v];if(!S.mods.spine&&planSub==='ex')planSub='diet';break;
+  case 'sub':planSub=v;window.scrollTo(0,0);break;
+  case 'lfilter':libFilter=+v;break;
+  case 'libadd':{const Lb=LIB.find(x=>x.id===id);if(Lb&&!S.exercises.some(x=>x.libId===id))S.exercises.push({id:'x'+Date.now(),libId:id,name:Lb.name,detail:Lb.short});toast('已加入我的每日训练');break}
+  case 'libdel':S.exercises=S.exercises.filter(x=>x.libId!==id);break;
+  case 'goex':tab='plan';sheet=null;planSub='ex';libFilter=0;openSet.add(id);window.scrollTo(0,0);setTimeout(()=>{const el=document.querySelector('details[data-id="'+id+'"]');if(el)el.scrollIntoView()},60);break;
+  case 'gotolib':tab='plan';planSub='ex';window.scrollTo(0,0);break;
+  case 'exadd':S.exercises.push({id:'e'+Date.now(),name:'',detail:''});break;
+  case 'exdel':if(!confirm('删除这个动作？'))return;S.exercises=S.exercises.filter(x=>x.id!==id);break;
+  case 'hold':{const x=S.holds.find(x=>x.id===id);x.unlocked=!x.unlocked;break}
+  case 'holddel':S.holds=S.holds.filter(x=>x.id!==id);break;
+  case 'holdadd':{const t=document.getElementById('holdin').value.trim();if(!t)return;S.holds.push({id:'h'+Date.now(),name:t,unlocked:false});break}
+  case 'tstart':timer.due=false;timer.end=Date.now()+S.sitMin*60000;document.title='健康小助手';try{navigator.vibrate&&navigator.vibrate(1)}catch(e){}break;
+  case 'tstop':timer.end=null;timer.due=false;break;
+  case 'report':document.getElementById('rep').value=report();return;
+  case 'copyrep':{const ta=document.getElementById('rep');if(!ta.value)ta.value=report();copy(ta.value,ta);return}
+  case 'export':exportData();return;
+  case 'import':document.getElementById('imp').click();return;
+  case 'copybak':{const ta=document.getElementById('bak');ta.value=JSON.stringify(S);copy(ta.value,ta);return}
+  case 'txtimp':{const ta=document.getElementById('bak');try{const o=JSON.parse(ta.value);if(!o||typeof o.days!=='object')throw 0;if(!confirm('导入会覆盖当前数据，确定吗？'))return;S=Object.assign(blank(),o);migrate();save();render();toast('导入成功')}catch(_){alert('文本格式不对，请粘贴完整的备份文本')}return}
+  case 'reset':if(!confirm('确定清空全部数据？建议先备份。'))return;if(!confirm('再次确认：清空后无法恢复。'))return;S=blank();break;
+  default:return}
+ save();render()});
+document.addEventListener('input',e=>{
+ const f=e.target.dataset.f;if(!f)return;const v=e.target.value;
+ if(f==='note')W(cur).note=v;
+ else if(f==='sleepStart'||f==='sleepEnd'){W(cur)[f]=v;const el=document.getElementById('slh');if(el)el.textContent=sleepLine(W(cur))}
+ else if(f.startsWith('task:'))W(cur).tasks[+f.slice(5)].t=v;
+ else if(f.startsWith('exn:')||f.startsWith('exd:')){const x=S.exercises.find(x=>x.id===f.slice(4));if(x)x[f[2]==='n'?'name':'detail']=v}
+ else if(f==='wt'||f==='wc'){const m=mondayOf(today());(S.weekly[m]=S.weekly[m]||{})[f]=v}
+ else if(f==='ht')S.height=v;
+ else if(f==='sitMin'){const n=+v;if(n>=5&&n<=120)S.sitMin=n}
+ save()});
+
+async function copy(text,ta){try{await navigator.clipboard.writeText(text);toast('已复制')}catch(e){ta.focus();ta.select();try{document.execCommand('copy')?toast('已复制'):toast('请长按文本手动复制')}catch(_){toast('请长按文本手动复制')}}}
+function exportData(){
+ const blob=new Blob([JSON.stringify(S)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`健康小助手备份-${today()}.json`;
+ document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('已导出')}
+document.getElementById('imp').addEventListener('change',e=>{
+ const f=e.target.files[0];if(!f)return;const r=new FileReader();
+ r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||typeof o.days!=='object')throw 0;
+  if(!confirm('导入会覆盖当前数据，确定吗？'))return;S=Object.assign(blank(),o);migrate();save();render();toast('导入成功')}catch(_){alert('文件格式不对，请选择本工具导出的备份文件')}
+  e.target.value=''};r.readAsText(f)});
+
+save();render();
+
+</script>
+</body>
+</html>
