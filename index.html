@@ -611,7 +611,7 @@ function renderPlan(){
 </script>
 <script>
 const KEY='lumbarHelper.v1';
-const APP_VER='2026-11-05h';
+const APP_VER='2026-11-05i';
 const QA=['请检查并记录：右侧踝跖屈和踮脚的肌力、跟腱反射、感觉和步态，是否提示 S1 神经根损害？','右脚无力是否需要加急脊柱外科评估？要不要复查 MRI 或做其他检查？','现在适合只做门诊康复吗？建议住院的医学原因是什么？','哪些动作可以做、哪些暂缓？坐、站、走、休息各多长合适？','止痛药怎么安排？药名、剂量、疗程、胃肠副作用。','病休多久，什么时候复诊，什么条件下逐步复工？','MRI 里“腰 5 后移”和“腰 4 不稳”具体指哪一节？要不要拍动态片？'];
 const LEGP=['正常','有点软','明显发软'];
 const LOCS=['不痛','仅腰部','到臀部','到大腿','到小腿/脚'];
@@ -757,7 +757,7 @@ function postureRow(){
  return `<section class="card posc"><div class="prow"><span><b>姿势计时</b><small id="plive">${run?`正在「${POSN[p.k]}」· ${fmtClock((Date.now()-(p.s||p.t))/1000)}`:'换姿势时点一下，再点一次当前姿势就暂停'}</small></span><button class="btn sm ghost" data-act="open" data-v="posture">详情</button></div>
  <div class="seg4">${POS.map(([k,n,c])=>`<button class="pb ${run===k?'on':''}" data-act="pos" data-v="${k}" style="--pc:var(${c})">${n}<small id="pt-${k}">${fmtShort(posSecs(k))}</small></button>`).join('')}</div>
  ${up?`<div class="phint" id="pup" style="margin-top:12px">连续直立 ${fmtDur(bs)} / 耐受 ${S.tol} 分钟（${Math.round(S.tol*.8)} 分钟提醒）</div><div class="pbar ${bs>=tol?'hot':''}" style="margin-top:6px"><i id="pupfill" style="width:${Math.min(100,bs/tol*100)}%"></i><u></u></div>`:''}
- <div class="phint" id="psit" style="margin-top:${up?10:12}px">今天坐了 ${fmtDur(sit)}，上限 ${fmtDur(cap)}</div>${w}</section>`}
+ <div class="phint" id="psit" style="margin-top:${up?10:12}px">今天坐了 ${fmtDur(sit)}（只有「坐」设了上限 ${fmtDur(cap)}，其他不限）</div><div class="phint" style="margin-top:4px">「躺」只记白天平躺休息；睡觉不用点，睡眠在「睡眠」里记。睡前请点一下当前姿势暂停。</div>${w}</section>`}
 function postureSheet(d){const sp=S.mods.spine,capH=S.sitCap/60;
  const sl=(sleepHrs(d)||0)*3600,sec={};POS.forEach(([k])=>sec[k]=posSecs(k,cur));
  const trk=Object.values(sec).reduce((a,b)=>a+b,0),rest=Math.max(0,86400-sl-trk),col={sit:'--c-spine',stand:'--c-food',walk:'--c-move',lie:'--c-mood'};
@@ -765,9 +765,9 @@ function postureSheet(d){const sp=S.mods.spine,capH=S.sitCap/60;
  let h=`<section class="card"><h3>这一天的 24 小时</h3><div class="stack">${seg(sl,'--c-sleep')}${POS.map(([k])=>seg(sec[k],col[k])).join('')}</div>
  <div class="legend"><span><i data-bg="sleep"></i>睡 ${fmtShort(sl)}</span>${POS.map(([k,n])=>`<span><i style="background:var(${col[k]})"></i>${n} ${fmtShort(sec[k])}</span>`).join('')}<span><i style="background:var(--fill)"></i>未记录 ${fmtShort(rest)}</span></div></section>`;
  h+=`<section class="card"><h3>建议怎么分配</h3>
- <div class="stat"><span>睡觉</span><b>7–8 小时</b></div>`+(sp?`
+ <div class="stat"><span>睡觉<br><small class="hint">在「睡眠」里记，不用点躺</small></span><b>7–8 小时</b></div>`+(sp?`
  <div class="stat"><span>连续直立<br><small class="hint">坐 + 站 + 走</small></span><b>不超过 ${S.tol} 分钟<br>到 ${Math.round(S.tol*.8)} 分钟提醒你躺下</b></div>
- <div class="stat"><span>躺下休息</span><b>每次 20–30 分钟<br>平躺屈膝，不是整天卧床</b></div>
+ <div class="stat"><span>白天躺下休息<br><small class="hint">不含睡觉</small></span><b>每次 20–30 分钟<br>平躺屈膝，不是整天卧床</b></div>
  <div class="stat"><span>坐，一天合计</span><b>不超过 ${f1(capH)} 小时<br>到 ${f1(capH*.8)} 小时提醒你</b></div>
  <div class="stat"><span>站、走</span><b>分多次，每次短一些<br>走完麻木更重就缩短</b></div>
  <p class="hint" style="margin-top:10px">这是按你病历里“坐、站、走交替约 2 小时就难耐受”排的初稿，一天可以是“直立约 ${Math.round(S.tol*.75)} 分钟，躺 20–30 分钟”循环。病历第 8 节第 4 问就是问医生这个，医生给了时长，就把下面的数字改成他定的。走路后麻木加重，请记在「腰椎」页。</p></section>`:`
