@@ -166,6 +166,12 @@ input,textarea,select{font-size:16px!important}
 .leg3 b{font-size:22px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.leg3 u{text-decoration:none;font-size:12px;color:var(--sub);margin-left:2px;font-weight:500}
 .rowi.minor{min-height:46px;padding:9px 16px}.rowi.minor .ico{width:28px;height:28px;border-radius:8px}.rowi.minor .ico svg{width:16px;height:16px}.rowi.minor .rt b{font-size:15px;font-weight:500}
 
+.cnum{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.01em;margin:-2px 0 8px}
+.mrow b{flex:none;width:auto;min-width:58px;white-space:nowrap}.mrow span b{min-width:0;color:var(--ink)}
+html.big #app,html.big #hdr{zoom:1.18}
+:root{--bar:rgba(249,249,251,.95)}@media (prefers-color-scheme:dark){:root{--bar:rgba(22,22,24,.95)}}
+.chips .chip{flex:none}
+
 </style>
 </head>
 <body>
@@ -426,15 +432,23 @@ const SN=['无糖酸奶 150 g + 苹果 1 个 + 原味杏仁 6 颗','牛奶 250 m
 const BA=[['清蒸鱼','鲈鱼 / 鲫鱼 / 巴沙鱼约 300 g，姜葱蒸 10 分钟；配蒜蓉菜心'],['番茄龙利鱼','龙利鱼片 + 番茄 2 个煮 10 分钟；配清炒小白菜'],['香煎三文鱼 / 鳕鱼','平底锅少油，每面 3 分钟；配烤西兰花彩椒（烤箱 15 分钟）'],['白灼虾','虾约 300 g 煮 3 分钟；配炒芥蓝'],['豆腐鱼片汤','鱼片 + 嫩豆腐 + 青菜一锅煮 10 分钟'],['虾仁炒蛋','虾仁 + 鸡蛋 3 个炒 5 分钟；配清炒生菜']];
 const BB=[['白切鸡','鸡胸 / 鸡腿去皮，水煮 15 分钟撕丝；配凉拌黄瓜、焯菠菜'],['番茄炖牛肉','瘦牛肉约 300 g，高压锅 20 分钟；配清炒油麦菜'],['彩椒鸡丁','鸡胸切丁 + 彩椒，炒 8 分钟；配蒜蓉生菜'],['肉末蒸蛋','鸡蛋 3 个 + 瘦肉末，蒸 10 分钟；配焯西兰花'],['菌菇炖鸡','鸡腿去皮 + 香菇，焖 25 分钟；配炒青菜'],['青椒牛肉丝','少油炒 8 分钟；配凉拌木耳']];
 const BC=[['家常豆腐','豆腐 + 青菜 + 瘦肉末，炒 10 分钟；配蒜蓉空心菜'],['菌菇豆腐煲','豆腐 + 蘑菇 + 青菜一锅煮 15 分钟'],['番茄炒蛋','鸡蛋 3 个 + 番茄 2 个，炒 5 分钟；配焯生菜'],['豆干炒芹菜','豆干 + 瘦肉丝炒 8 分钟；配凉拌紫甘蓝'],['鸡丝凉拌荞麦面','荞麦面 + 鸡胸丝 + 黄瓜胡萝卜丝（主食已包含，不用再配饭）'],['蔬菜蛋汤面','全麦面 + 大把青菜 + 蛋，煮 10 分钟（主食已包含，不用再配饭）']];
+const BAn=[['豆腐蒸蛋','嫩豆腐 + 鸡蛋 + 瘦肉末，蒸 10 分钟；配蒜蓉菜心'],['鸡丝豆腐煲','鸡胸丝 + 豆腐 + 青菜，煮 12 分钟'],['香煎鸡腿排','去皮鸡腿肉少油煎 6 分钟；配烤西兰花彩椒'],['肉末豆腐','瘦肉末 + 豆腐炒 8 分钟；配炒芥蓝'],['鸡蛋豆腐羹','鸡蛋 2 个 + 豆腐 + 青菜，煮 8 分钟'],['卤鸡腿','去皮鸡腿卤 30 分钟；配清炒小白菜']];
+const BAv=[['麻婆豆腐（少油）','豆腐 + 少许豆瓣酱 + 青蒜，炒 10 分钟；配蒜蓉菜心'],['番茄豆腐煲','番茄 2 个 + 豆腐煮 12 分钟；配清炒小白菜'],['香煎豆腐','豆腐切块少油煎 8 分钟；配烤西兰花彩椒'],['菌菇炖豆腐','蘑菇 + 豆腐 + 青菜一锅煮 15 分钟'],['豆腐蒸蛋','嫩豆腐 + 鸡蛋 3 个，蒸 10 分钟；配焯西兰花'],['豆干炒青椒','豆干 + 青椒炒 8 分钟；配凉拌黄瓜']];
+const BBv=[['番茄炒蛋','鸡蛋 3 个 + 番茄 2 个，炒 5 分钟；配焯生菜'],['韭菜炒蛋','鸡蛋 3 个 + 韭菜，炒 5 分钟；配凉拌黄瓜'],['青椒炒蛋','鸡蛋 3 个 + 青椒，炒 5 分钟；配蒜蓉生菜'],['蒸蛋羹','鸡蛋 3 个 + 温水，蒸 10 分钟；配焯西兰花'],['毛豆玉米炒蛋','毛豆 + 玉米粒 + 鸡蛋，炒 8 分钟；配凉拌木耳'],['菠菜炒蛋','鸡蛋 3 个 + 菠菜，炒 5 分钟；配凉拌紫甘蓝']];
+const BCv=[['豆干炒芹菜','豆干 + 芹菜炒 8 分钟；配凉拌紫甘蓝'],['家常豆腐','豆腐 + 青菜，炒 10 分钟；配蒜蓉空心菜'],['菌菇豆腐煲','豆腐 + 蘑菇 + 青菜一锅煮 15 分钟'],['鹰嘴豆沙拉','罐装鹰嘴豆 + 黄瓜 + 番茄拌匀，不用开火；配杂粮饭'],['红烧豆腐','豆腐煎后焖 10 分钟；配炒青菜'],['蔬菜蛋汤面','全麦面 + 大把青菜 + 蛋，煮 10 分钟（主食已包含，不用再配饭）']];
+const EAT='今天外食：先吃蔬菜，再吃肉，最后吃主食。点蒸、煮、炖、凉拌，少点油炸和红烧。主食选一半杂粮，饮料选白水或无糖茶。';
 const FREE='自由日：吃前两天的剩菜，或外食。照餐盘法：半盘蔬菜、1/4 蛋白质、1/4 杂粮饭。';
 const weekNo=d=>Math.floor((parse(mondayOf(d))-parse('2024-01-01'))/(7*864e5));
-function weekSet(d){const w=weekNo(d);return{b:BF[w%6],s:SN[(w+3)%6],A:BA[w%6],B:BB[(w+2)%6],C:BC[(w+4)%6]}}
+const prefs=()=>(typeof S!=='undefined'&&S.prefs)||{};
+const adapt=t=>prefs().nomilk?t.replace(/无糖酸奶 150 g/g,'无糖豆浆 250 ml').replace(/牛奶/g,'无糖豆浆'):t;
+function weekSet(d){const w=weekNo(d),P=prefs(),v=P.veg;
+ return{b:adapt(BF[w%6]),s:adapt(SN[(w+3)%6]),A:(v?BAv:P.nofish?BAn:BA)[w%6],B:(v?BBv:BB)[(w+2)%6],C:(v?BCv:BC)[(w+4)%6]}}
 function menuFor(d){const W=weekSet(d),i=(parse(d).getDay()+6)%7;
  if(i===6)return{b:W.b,l:FREE,d:FREE,s:W.s,free:1,fish:false};
  const k=['A','A','B','B','C','C'][i],x=W[k],noRice=/不用再配饭/.test(x[1]);
- return{b:W.b,l:x[0]+(noRice?'':' + 杂粮饭 1 拳'),d:x[0]+(noRice?'':' + 杂粮饭小半碗'),s:W.s,fish:k==='A',batch:k,how:x[1]}}
+ return{b:W.b,l:x[0]+(noRice?'':' + 杂粮饭 1 拳'),d:x[0]+(noRice?'':' + 杂粮饭小半碗'),s:W.s,fish:k==='A'&&!prefs().veg&&!prefs().nofish,batch:k,how:x[1]}}
 function menuHasFish(m){return !!m.fish}
-const MENU_NOTE='一道菜一次做 2 天的量，冷藏，吃前加热透，第 2 天内吃完。杂粮饭一次煮 6 份，分袋冷冻，吃前微波。每周三道菜、早餐和加餐都会换。每周有 2 天吃鱼虾。有过敏、忌口或疾病请自行替换同类食物。';
+const menuNote=()=>'一道菜一次做 2 天的量，冷藏，吃前加热透，第 2 天内吃完。杂粮饭一次煮 6 份，分袋冷冻，吃前微波。每周三道菜、早餐和加餐都会换。'+(prefs().veg||prefs().nofish?'':'每周有 2 天吃鱼虾。')+(prefs().veg?'素食要留意维生素 B12 和铁，是否需要补充请问医生。':'')+(prefs().nomilk?'不喝奶时，钙要从豆腐、深绿叶菜、钙强化豆浆里补，是否需要补钙请问医生。':'')+'有过敏、忌口或疾病请自行替换同类食物，并遵医嘱。';
 const MEAL_N=[['b','早餐'],['l','午餐'],['d','晚餐'],['s','加餐']];
 const MEAL_SV={b:{grain:1,prot:1,milk:1},l:{grain:2,veg:2,prot:1},d:{grain:1,veg:2,prot:1},s:{fruit:2,milk:1,soy:1}};
 const MEAL_K={b:3,l:5,d:4,s:2};
@@ -512,6 +526,7 @@ function planMove(){
  if(sp){h+=`<section class="card"><h2>哪些运动适合腰椎恢复期</h2><p class="hint" style="margin-bottom:6px">仅供参考，以康复师意见为准</p>${SPORTS.map(([n,t,x])=>`<div class="rowi" style="padding:10px 0;min-height:0;align-items:flex-start"><span class="rt"><b>${n}</b><small>${x}</small></span><span class="tag ${t==='友好'?'ok':t==='暂缓'?'bad':'warn'}">${t}</span></div>`).join('')}</section>`}
  return h}
 
+const dd2=(a,b)=>wday(a)+'、'+wday(b).slice(1);
 function dayMenuHtml(m){return `<div class="mrow"><b>早</b><span>${esc(m.b)}</span></div><div class="mrow"><b>午</b><span>${esc(m.l)}</span></div><div class="mrow"><b>晚</b><span>${esc(m.d)}</span></div><div class="mrow"><b>加餐</b><span>${esc(m.s)}</span></div>`}
 
 function planDiet(){
@@ -530,12 +545,12 @@ function planDiet(){
  const base=menuOff?addDays(mondayOf(today()),7):today(),mon=mondayOf(base),W=weekSet(mon);
  h+=`<section class="card"><h2>${menuOff?'下周':'本周'}吃什么</h2><div class="seg" style="margin-bottom:10px"><button data-act="menuoff" data-v="0" class="${menuOff?'':'on'}">本周</button><button data-act="menuoff" data-v="1" class="${menuOff?'on':''}">下周</button></div>
  <div class="mrow"><b>早餐</b><span>${esc(W.b)}<br><small class="hint">整周固定，鸡蛋一次煮 5 个</small></span></div>
- <div class="mrow"><b>${wday(mon)}、${wday(addDays(mon,1))}</b><span><b style="width:auto;color:var(--ink)">${esc(W.A[0])}</b><br>${esc(W.A[1])}</span></div>
- <div class="mrow"><b>${wday(addDays(mon,2))}、${wday(addDays(mon,3))}</b><span><b style="width:auto;color:var(--ink)">${esc(W.B[0])}</b><br>${esc(W.B[1])}</span></div>
- <div class="mrow"><b>${wday(addDays(mon,4))}、${wday(addDays(mon,5))}</b><span><b style="width:auto;color:var(--ink)">${esc(W.C[0])}</b><br>${esc(W.C[1])}</span></div>
+ <div class="mrow"><b>${dd2(mon,addDays(mon,1))}</b><span><b style="width:auto;color:var(--ink)">${esc(W.A[0])}</b><br>${esc(W.A[1])}</span></div>
+ <div class="mrow"><b>${dd2(addDays(mon,2),addDays(mon,3))}</b><span><b style="width:auto;color:var(--ink)">${esc(W.B[0])}</b><br>${esc(W.B[1])}</span></div>
+ <div class="mrow"><b>${dd2(addDays(mon,4),addDays(mon,5))}</b><span><b style="width:auto;color:var(--ink)">${esc(W.C[0])}</b><br>${esc(W.C[1])}</span></div>
  <div class="mrow"><b>周日</b><span>${esc(FREE)}</span></div>
  <div class="mrow"><b>加餐</b><span>${esc(W.s)}<br><small class="hint">整周固定</small></span></div>
- <p class="hint" style="margin-top:8px">${MENU_NOTE}</p></section>`;
+ <p class="hint" style="margin-top:8px">${menuNote()}</p></section>`;
  h+=`<section class="card"><h2>每日参考量</h2><p class="hint" style="margin-bottom:4px">参考《中国居民膳食指南（2022）》，成人，生重</p>${FOOD_REF.map(([a,b])=>`<div class="stat"><span>${a}</span><b>${b}</b></div>`).join('')}</section>`;
  h+=`<section class="card"><h2>一份是多少</h2><p class="hint" style="margin-bottom:6px">「今日」页按“份”记。点开看每份多少、吃什么。</p>${GROUPS.map(g=>det('g-'+g.k,`<span>${g.n}</span><span class="tags"><span class="tag">${g.lo}${g.hi>g.lo?'–'+g.hi:''} 份/天</span></span>`,`<h4>1 份是多少</h4><p>${esc(g.unit)}</p><h4>常见食物</h4><p>${esc(g.eg)}</p><h4>作用</h4><p>${esc(g.role)}</p>`)).join('')}<p class="hint" style="margin-top:8px">另外还有三项：主食里有全谷物和杂豆、一半蔬菜是深色的、一天吃够 12 种以上不同的食物。</p></section>`;
  h+=`<section class="card"><h2>重要的营养素</h2>${NUTR.map(([a,b])=>det('n'+a,`<span>${a}</span>`,`<p>${esc(b)}</p>`)).join('')}<p class="hint" style="margin-top:8px">保健品和补剂请先问医生，不要自己加量。</p></section>`;
@@ -556,12 +571,12 @@ function renderPlan(){
  if(S.mods.spine)subs.push(['ex','腰椎']);
  if(!subs.some(s=>s[0]===planSub))planSub='diet';
  return `<section style="margin:6px 16px 0"><div class="seg">${subs.map(([k,n])=>`<button data-act="sub" data-v="${k}" class="${planSub===k?'on':''}">${n}</button>`).join('')}</div></section>
- <div class="foot">以下为通用参考，不能替代医生或康复师为你定的方案；不一致时，以他们的为准。</div>`+({diet:planDiet,move:planMove,sleep:planSleep,post:planPost,ex:planEx}[planSub])()}
+ <div class="foot">以下为通用参考，不能替代${S.mods.spine?'医生或康复师':'医生'}为你定的方案；不一致时，以${S.mods.spine?'他们':'医生'}的为准。</div>`+({diet:planDiet,move:planMove,sleep:planSleep,post:planPost,ex:planEx}[planSub])()}
 
 </script>
 <script>
 const KEY='lumbarHelper.v1';
-const APP_VER='2026-11-05d';
+const APP_VER='2026-11-05e';
 const QA=['请检查并记录：右侧踝跖屈和踮脚的肌力、跟腱反射、感觉和步态，是否提示 S1 神经根损害？','右脚无力是否需要加急脊柱外科评估？要不要复查 MRI 或做其他检查？','现在适合只做门诊康复吗？建议住院的医学原因是什么？','哪些动作可以做、哪些暂缓？坐、站、走、休息各多长合适？','止痛药怎么安排？药名、剂量、疗程、胃肠副作用。','病休多久，什么时候复诊，什么条件下逐步复工？','MRI 里“腰 5 后移”和“腰 4 不稳”具体指哪一节？要不要拍动态片？'];
 const LEGP=['正常','有点软','明显发软'];
 const LOCS=['不痛','仅腰部','到臀部','到大腿','到小腿/脚'];
@@ -609,16 +624,17 @@ const avg=a=>a.length?a.reduce((s,v)=>s+v,0)/a.length:null;
 const f1=v=>v==null?'—':String(Math.round(v*10)/10);
 const lastN=(n,end=today())=>{const r=[];for(let i=n-1;i>=0;i--)r.push(addDays(end,-i));return r};
 
-function blank(){return{version:3,days:{},weekly:{},exercises:JSON.parse(JSON.stringify(DEF_EX)),holds:JSON.parse(JSON.stringify(DEF_HOLD)),phase:0,sitMin:40,height:'',sex:'',goal:'keep',mods:{spine:true},lastBackup:'',snooze:'',sitCap:360,capSet:false,tol:120,up:0,alertedB:null,qa:{},nudge:'',pos:null,alerted:null}}
+function blank(){return{version:3,days:{},weekly:{},exercises:JSON.parse(JSON.stringify(DEF_EX)),holds:JSON.parse(JSON.stringify(DEF_HOLD)),phase:0,sitMin:40,height:'',sex:'',goal:'keep',mods:{spine:false},prefs:{veg:false,nomilk:false,nofish:false},big:false,quiet:false,lastBackup:'',snooze:'',sitCap:360,capSet:false,tol:120,up:0,alertedB:null,qa:{},nudge:'',pos:null,alerted:null}}
 function load(){try{const r=localStorage.getItem(KEY);if(r)return Object.assign(blank(),JSON.parse(r))}catch(e){}return blank()}
-function emptyDay(){return{legPain:null,legPow:null,numbMore:false,meals:{b:false,l:false,d:false,s:false},sleepMin:0,ps:{sit:0,stand:0,walk:0,lie:0},sleepStart:'',sleepEnd:'',nWake:null,stiff:null,sleep:null,
+function emptyDay(){return{eatOut:false,legPain:null,legPow:null,numbMore:false,meals:{b:false,l:false,d:false,s:false},sleepMin:0,ps:{sit:0,stand:0,walk:0,lie:0},sleepStart:'',sleepEnd:'',nWake:null,stiff:null,sleep:null,
  diet:{sv:{grain:0,veg:0,fruit:0,prot:0,milk:0,soy:0},whole:false,dark:false,fish:false,kinds:0,water:0,avoid:[]},
  walk:0,sport:[],sportMin:0,sitMax:0,energy:null,mood:null,stress:null,note:'',
  painAM:null,painPM:null,loc:null,numb:false,red:false,ex:{},trig:[],
  tasks:[{t:'',done:false},{t:'',done:false},{t:'',done:false}]}}
 let S=load();migrate();
 function migrate(){
- S.version=3;if(!(S.sitCap>0))S.sitCap=360;if(!S.capSet&&S.sitCap===480)S.sitCap=360;if(!(S.tol>0))S.tol=120;if(S.up==null)S.up=0;if(S.alertedB===undefined)S.alertedB=null;if(!S.qa||typeof S.qa!=='object')S.qa={};if(S.nudge==null)S.nudge='';if(S.pos===undefined)S.pos=null;if(S.alerted===undefined)S.alerted=null;if(S.lastBackup==null)S.lastBackup='';if(S.snooze==null)S.snooze='';if(S.height==null)S.height='';if(S.sex==null)S.sex='';if(!S.goal)S.goal='keep';
+ if((S.version||0)<3)S.mods={spine:true};
+ S.version=3;if(!(S.sitCap>0))S.sitCap=360;if(!S.capSet&&S.sitCap===480)S.sitCap=360;if(!(S.tol>0))S.tol=120;if(S.up==null)S.up=0;if(S.alertedB===undefined)S.alertedB=null;if(!S.qa||typeof S.qa!=='object')S.qa={};if(S.nudge==null)S.nudge='';if(S.pos===undefined)S.pos=null;if(S.alerted===undefined)S.alerted=null;if(S.lastBackup==null)S.lastBackup='';if(S.snooze==null)S.snooze='';if(S.onboarded===undefined)S.onboarded=Object.keys(S.days||{}).length>0;if(!S.prefs||typeof S.prefs!=='object')S.prefs={veg:false,nomilk:false,nofish:false};if(S.big==null)S.big=false;if(S.quiet==null)S.quiet=false;if(S.height==null)S.height='';if(S.sex==null)S.sex='';if(!S.goal)S.goal='keep';
  if(!S.mods||typeof S.mods!=='object')S.mods={spine:true};if(S.mods.spine==null)S.mods.spine=true;
  for(const k in S.days){const x=S.days[k],e=emptyDay();
   for(const f in e){if(!(f in x))x[f]=e[f]}
@@ -733,16 +749,23 @@ function postureSheet(d){const sp=S.mods.spine,capH=S.sitCap/60;
  return h}
 
 const hasLog=x=>!!x&&(sleepHrs(x)!=null||dietTouched(x.diet)||moveMin(x)>0||x.painAM!=null||x.painPM!=null||x.energy!=null||x.tasks.some(t=>t.t));
-function weekDots(){const mon=mondayOf(today());let n=0;
+function weekDots(){if(S.quiet)return'';const mon=mondayOf(today());let n=0;
  const dots=[0,1,2,3,4,5,6].map(i=>{const dd=addDays(mon,i),ok=hasLog(S.days[dd]);if(ok)n++;return `<i class="${ok?'on':''} ${dd===today()?'cur':''}"></i>`}).join('');
  return `<div class="wkdots"><span>本周已记 ${n}/7 天</span><span class="dots">${dots}</span></div>`}
-function todoBanner(d){if(cur!==today()||sheet||S.nudge===today()||new Date().getHours()<19)return'';
+function todoBanner(d){if(S.quiet||cur!==today()||sheet||S.nudge===today()||new Date().getHours()<19)return'';
  const m=[];if(sleepHrs(d)==null)m.push(['sleep','睡眠']);if(!dietTouched(d.diet))m.push(['diet','饮食']);if(S.mods.spine&&d.painAM==null&&d.painPM==null)m.push(['spine','腰椎']);
  if(!m.length)return'';
  return `<section class="group due"><div class="rowi"><div class="rt"><b>今天还差：${m.map(x=>x[1]).join('、')}</b><div class="hint">一分钟就能记完</div></div><button class="btn sm" data-act="open" data-v="${m[0][0]}">去记</button><button class="btn sm ghost" data-act="nudge">不用了</button></div></section>`}
 function rowHtml(x,d,cls=''){const[t,done]=domSum(x.k,d);
  return `<button class="rowi ${cls}" data-act="open" data-v="${x.k}"><span class="ico" style="background:var(${x.c})">${ic(x.i)}</span><span class="rt"><b>${x.n}</b><small>${esc(t)}</small></span>${done?`<span class="dn">${ic('check',18)}</span>`:''}<span class="chev">${ic('chev',16)}</span></button>`}
+function onboardCard(){const P=S.prefs;
+ return `<section class="card"><h2>先选几项，30 秒</h2><p class="hint" style="margin-bottom:12px">之后都能在「我的」里改。</p>
+ <h3>目标</h3><div class="seg" style="margin-bottom:16px">${Object.entries(GOAL_N).map(([k,n])=>`<button data-act="goal" data-v="${k}" class="${S.goal===k?'on':''}">${n}</button>`).join('')}</div>
+ <h3>饮食偏好</h3><div class="chips" style="margin-bottom:16px">${[['veg','素食（吃蛋奶）'],['nomilk','不喝奶'],['nofish','不吃鱼虾']].map(([k,n])=>`<button class="chip ${P[k]?'on':''}" data-act="pref" data-v="${k}">${n}</button>`).join('')}</div>
+ <div class="rowi" style="padding:0;min-height:0;margin-bottom:16px;border-top:0"><span class="rt"><b>我有腰椎问题，要康复模块</b><small>会多出腰椎页、疼痛和康复训练记录</small></span>${sw('mod','spine',S.mods.spine)}</div>
+ <div class="btns"><button class="btn" data-act="onboard">开始使用</button></div></section>`}
 function renderHome(d){
+ if(!S.onboarded)return onboardCard();
  const sh=sleepHrs(d),sc=dietScore(d),mv=moveMin(d);let h='';
  if(S.mods.spine)h+=redAlert(d);
  h+=backupBanner()||todoBanner(d);
@@ -759,7 +782,7 @@ function renderHome(d){
 
 /* ---------- 今日：各记录页 ---------- */
 function sleepSheet(d){const sp=S.mods.spine,m=d.sleepMin||0;
- return `<section class="card"><h3>昨晚睡了多久</h3><p class="hint" style="margin-bottom:12px">打开 iPhone「健康」App → 睡眠，抄下时长。Apple Watch 会自动记录，这里不用自己估。</p>
+ return `<section class="card"><h3>昨晚睡了多久</h3><p class="hint" style="margin-bottom:12px">打开 iPhone「健康」App → 睡眠，抄下时长。Apple Watch 会自动记录，这里不用自己估。记在起床那一天，夜班或补觉也一样。</p>
  <div class="two"><label>小时<input type="number" inputmode="numeric" min="0" max="16" data-f="slH" value="${m?Math.floor(m/60):''}" placeholder="7"></label><label>分钟<input type="number" inputmode="numeric" min="0" max="59" data-f="slM" value="${m?m%60:''}" placeholder="30"></label></div><div class="big2" id="slh">${sleepLine(d)}</div></section>
  <section class="card"><h3>睡得怎么样</h3>${lvl('sleep',d.sleep,['很差','较差','一般','较好','很好'])}</section>
  ${sp?`<section class="card"><h3>早上腰部僵硬多久</h3>${chips(STIFF,i=>d.stiff===i,'stiff')}</section>`:''}
@@ -767,13 +790,14 @@ function sleepSheet(d){const sp=S.mods.spine,m=d.sleepMin||0;
 
 function setMeal(d,k,on){if(!d.meals)d.meals={b:false,l:false,d:false,s:false};if(!!d.meals[k]===on)return;d.meals[k]=on;
  const g=on?1:-1,t=d.diet;for(const f in MEAL_SV[k])t.sv[f]=Math.max(0,(t.sv[f]||0)+g*MEAL_SV[k][f]);
- t.kinds=Math.max(0,(t.kinds||0)+g*MEAL_K[k]);const main=!!(d.meals.l||d.meals.d);t.whole=main;t.dark=main;t.fish=main&&!!menuFor(cur).fish}
-function dietSheet(d){const t=d.diet,sc=dietScore(d),gaps=dietGaps(d),m=menuFor(cur),mt=d.meals||{};
+ t.kinds=Math.max(0,(t.kinds||0)+g*MEAL_K[k]);const main=!!(d.meals.l||d.meals.d);t.whole=main;t.dark=main;t.fish=main&&!!menuFor(cur).fish&&!W(cur).eatOut}
+function dietSheet(d){const t=d.diet,sc=dietScore(d),gaps=dietGaps(d),m0=menuFor(cur),mt=d.meals||{},m=d.eatOut?{b:adapt('牛奶 / 豆浆 + 蛋 + 主食（包子、面包、粥都行）'),l:EAT,d:EAT,s:m0.s,fish:false}:m0,P=S.prefs,noFish=P.veg||P.nofish;
  let h=`<section class="card"><div class="big">${sc==null?'—':sc}<span class="u"> / 10</span></div><div class="big2" style="margin-top:6px">今日营养均衡</div>`;
  if(sc==null)h+='<p class="hint" style="margin-top:12px">最省事的记法：吃了哪一顿，就打开下面那一顿的开关。</p>';
  else if(!gaps.length)h+='<p class="good">今天吃得很均衡。</p>';
  else h+=`<ul class="gap">${gaps.map(g=>`<li><b>${g.n}</b><span>${esc(g.tip)}</span></li>`).join('')}</ul>`;
- h+=`</section><section class="card"><h3>${cur===today()?'今天':md(cur)}的餐谱${m.free?'（自由日）':''}</h3><p class="hint">吃了哪顿，就打开哪顿的开关，点错了再点一下就撤销。没完全照着吃，下面的份数可以再改。</p>${m.how?`<p class="hint" style="margin-top:6px">今天这道菜怎么做：${esc(m.how)}</p>`:''}</section>
+ h+=`</section><section class="card"><h3>${cur===today()?'今天':md(cur)}的餐谱${m.free?'（自由日）':''}${d.eatOut?'（外食）':''}</h3><p class="hint">吃了哪顿，就打开哪顿的开关，点错了再点一下就撤销。没完全照着吃，下面的份数可以再改。</p>${m.how&&!d.eatOut?`<p class="hint" style="margin-top:6px">今天这道菜怎么做：${esc(m.how)}</p>`:''}</section>
+ <section class="group"><div class="rowi"><span class="rt"><b>今天外食，不按餐谱</b><small>下面的餐谱会换成外食的吃法</small></span>${sw('eatout','x',d.eatOut)}</div></section>
  <section class="group">${MEAL_N.map(([k,n])=>`<div class="rowi"><span class="rt"><b>${n}</b><small>${esc(m[k])}</small></span>${sw('meal',k,mt[k])}</div>`).join('')}</section>
  <div class="btns" style="margin:0 16px 12px"><button class="btn sm" data-act="mealall">全部照着吃了</button><button class="btn sm ghost" data-act="mealclear">清空今天的饮食</button></div>
  <section class="group">`+GROUPS.map(g=>{const n=t.sv[g.k],st=n>=g.lo?(n>g.hi&&g.k!=='veg'?'high':'ok'):'';
@@ -782,7 +806,7 @@ function dietSheet(d){const t=d.diet,sc=dietScore(d),gaps=dietGaps(d),m=menuFor(
  <section class="group"><details data-id="d-more" ${openSet.has('d-more')?'open':''}><summary style="padding:14px 16px">补充项（可选）</summary>
  <div class="rowi"><span class="rt"><b>全谷物和杂豆</b><small>主食里有糙米、燕麦、玉米或杂豆</small></span>${sw('dflag','whole',t.whole)}</div>
  <div class="rowi"><span class="rt"><b>深色蔬菜占一半以上</b><small>深绿、橙红、紫色</small></span>${sw('dflag','dark',t.dark)}</div>
- <div class="rowi"><span class="rt"><b>鱼 / 海鲜</b><small>每周至少 2 次</small></span>${sw('dflag','fish',t.fish)}</div>
+ ${noFish?'':`<div class="rowi"><span class="rt"><b>鱼 / 海鲜</b><small>每周至少 2 次</small></span>${sw('dflag','fish',t.fish)}</div>`}
  <div class="rowi"><span class="rt"><b>食物种类</b><small>一天不同的食物，目标 12 种以上</small></span>${stp('kinds',t.kinds,1,t.kinds>=12?'ok':'')}</div>
  <div style="padding:12px 16px 14px"><div class="hint" style="margin-bottom:8px">今天有没有（越少越好）</div><div class="chips">${AVOID.map(a=>`<button class="chip warn ${t.avoid.includes(a)?'on':''}" data-act="avoid" data-v="${a}">${a}</button>`).join('')}</div></div></details></section>`;
  return h}
@@ -866,7 +890,7 @@ function chart(days,series,o){
   if(o.bars){const bw=Math.max(3,iw/n*.6);se.v.forEach((v,i)=>{if(v)s+=`<rect x="${X(i)-bw/2}" y="${Y(v)}" width="${bw}" height="${pt+ih-Y(v)}" rx="2" fill="${se.c}"/>`})}
   else{let p='',pen=false,dots='';se.v.forEach((v,i)=>{if(v==null){pen=false;return}p+=(pen?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1);pen=true;dots+=`<circle cx="${X(i)}" cy="${Y(v)}" r="2.8" fill="${se.c}"/>`});s+=`<path d="${p}" fill="none" stroke="${se.c}" stroke-width="2" stroke-linejoin="round"/>`+dots}});
  return s+'</svg>'}
-function cardChart(title,sub,svg,legend=''){return `<section class="card"><h3>${title}</h3>${sub?`<div class="big2" style="margin:-4px 0 8px">${sub}</div>`:''}${svg}${legend}</section>`}
+function cardChart(title,sub,svg,legend=''){return `<section class="card"><h3>${title}</h3>${sub?`<div class="cnum">${sub}</div>`:''}${svg}${legend}</section>`}
 
 function renderTrend(){
  const days=lastN(range),g=k=>days.map(d=>S.days[d]?.[k]??null);
@@ -943,7 +967,10 @@ function renderMe(){
  <div class="rowi"><span class="rt"><b>体重</b><small>本周，kg</small></span><input class="inl" type="number" inputmode="decimal" step="0.1" data-f="wt" placeholder="—" value="${esc(w.wt)}"></div>
  <div class="rowi"><span class="rt"><b>腰围</b><small>本周，cm</small></span><input class="inl" type="number" inputmode="decimal" step="0.1" data-f="wc" placeholder="—" value="${esc(w.wc)}"></div>
  <div style="padding:12px 16px 14px;border-top:.5px solid var(--line)"><div class="hint" style="margin-bottom:8px">目标</div><div class="seg">${Object.entries(GOAL_N).map(([k,n])=>`<button data-act="goal" data-v="${k}" class="${S.goal===k?'on':''}">${n}</button>`).join('')}</div></div></details></section>
- <section class="group"><div class="rowi"><span class="rt"><b>腰椎康复模块</b><small>开启后，今日、方案、趋势里会出现腰椎相关内容</small></span>${sw('mod','spine',S.mods.spine)}</div></section>
+ <section class="group"><div class="rowi"><span class="rt"><b>饮食偏好</b><small>餐谱会跟着换</small></span><div class="chips" style="justify-content:flex-end">${[['veg','素食'],['nomilk','不喝奶'],['nofish','不吃鱼虾']].map(([k,n])=>`<button class="chip ${S.prefs[k]?'on':''}" data-act="pref" data-v="${k}">${n}</button>`).join('')}</div></div>
+ <div class="rowi"><span class="rt"><b>大字号</b><small>字更大，适合眼睛吃力时</small></span>${sw('big','x',S.big)}</div>
+ <div class="rowi"><span class="rt"><b>安静模式</b><small>不显示晚间提醒和本周圆点。备份提醒和姿势提醒不受影响</small></span>${sw('quiet','x',S.quiet)}</div>
+ <div class="rowi"><span class="rt"><b>腰椎康复模块</b><small>开启后，今日、方案、趋势里会出现腰椎相关内容</small></span>${sw('mod','spine',S.mods.spine)}</div></section>
  <section class="card"><h2>周报</h2><p class="hint">复制后发给 Claude 做复盘</p><div class="btns"><button class="btn sm" data-act="report">生成近 7 天周报</button><button class="btn sm ghost" data-act="copyrep">复制</button></div><textarea id="rep" readonly placeholder="点上面的按钮生成" style="min-height:120px"></textarea></section>`;
  if(hist.length)h+=`<section class="card"><h2>体重与腰围记录</h2><table><tr><th>周</th><th>体重</th><th>腰围</th></tr>${hist.map(k=>`<tr><td>${md(k)}</td><td>${esc(S.weekly[k].wt||'—')}</td><td>${esc(S.weekly[k].wc||'—')}</td></tr>`).join('')}</table></section>`;
  h+=`<section class="card"><h2>用得久一点</h2><ul><li>在 Safari 里点分享，选“添加到主屏幕”，以后像 App 一样打开。</li><li>一天只做三件事：早上抄睡眠，吃完饭打开餐谱开关，晚上记疼痛。</li><li>每周日点「一键备份」。</li></ul><div class="btns"><button class="btn sm ghost" data-act="update">检查更新</button></div><p class="hint" style="margin-top:8px">版本 ${APP_VER}。更新后没变化，请完全关掉再打开。</p></section>
@@ -983,7 +1010,7 @@ function render(){
  if(tab==='today'&&sheet){const t=DOM.find(x=>x.k===sheet)||{n:'姿势时间'};hd=`<div><button class="back" data-act="back">${ic('back',22)}${isT?'今天':md(cur)}</button><h1>${t.n}</h1></div>`}
  else if(tab==='today'){hd=`<div><div class="sub">${md(cur)} ${wday(cur)}</div><h1>${isT?'今天':wday(cur)}</h1></div><div class="dnav"><button data-act="day" data-v="-1" aria-label="前一天">${ic('back',18)}</button>${isT?'':'<button class="today-btn" data-act="gotoday">今天</button>'}<button data-act="day" data-v="1" aria-label="后一天" ${isT?'disabled style="opacity:.3"':''}>${ic('chev',18)}</button></div>`}
  else hd=`<div><h1>${TITLES[tab]}</h1></div>`;
- const sy=window.scrollY;
+ const sy=window.scrollY;document.documentElement.classList.toggle('big',!!S.big);
  document.getElementById('hdr').innerHTML=hd;
  document.getElementById('app').innerHTML={today:renderToday,plan:renderPlan,trend:renderTrend,spine:renderSpine,me:renderMe}[tab]();
  document.getElementById('nav').innerHTML=NAV.filter(n=>n[0]!=='spine'||S.mods.spine).map(([k,n,i])=>`<button data-tab="${k}" class="${tab===k?'on':''}">${ic(i,24)}<span>${n}</span></button>`).join('');
@@ -1025,6 +1052,11 @@ document.addEventListener('click',e=>{
   case 'phase':S.phase=+v;break;
   case 'sex':S.sex=v;break;
   case 'goal':S.goal=v;break;
+  case 'pref':S.prefs[v]=!S.prefs[v];break;
+  case 'onboard':S.onboarded=true;break;
+  case 'big':S.big=!S.big;break;
+  case 'quiet':S.quiet=!S.quiet;break;
+  case 'eatout':d=W(cur);d.eatOut=!d.eatOut;break;
   case 'mod':S.mods[v]=!S.mods[v];if(!S.mods.spine&&planSub==='ex')planSub='diet';break;
   case 'sub':planSub=v;window.scrollTo(0,0);break;
   case 'lfilter':libFilter=+v;break;
