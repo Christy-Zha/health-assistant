@@ -207,6 +207,12 @@ html[data-tod=am]{--sky:#fbdcae}html[data-tod=noon]{--sky:#f6e6b8}html[data-tod=
 body::before{height:420px}
 @media (prefers-color-scheme:dark){:root{--bg:#2b231d;--card:#3a3029;--ink:#f6ecdf;--sub:#b9aa99;--line:rgba(255,235,210,.16);--fill:rgba(255,235,210,.10);--bar:rgba(43,35,29,.95)}html[data-tod=am]{--sky:#5a4328}html[data-tod=noon]{--sky:#4a4a30}html[data-tod=dusk]{--sky:#59382f}html[data-tod=night]{--sky:#3d3247}}
 
+.alert.emerg{background:#b3261e;color:#fff;font-weight:500}
+.alert.urgent{background:#f4d3c8;color:#8a2414}
+.alert.soft{background:var(--fill);color:var(--ink)}
+.ins{margin-top:8px;padding:11px 13px;border-radius:12px;font-size:15px;line-height:1.45;background:var(--fill)}
+.ins.urgent{background:#b3261e;color:#fff}.ins.watch{background:var(--warn-soft);color:var(--warn)}.ins.note{background:transparent;color:var(--sub);padding-left:2px;font-size:14px}
+
 </style>
 </head>
 <body>
@@ -611,7 +617,7 @@ function renderPlan(){
 </script>
 <script>
 const KEY='lumbarHelper.v1';
-const APP_VER='2026-11-06a';
+const APP_VER='2026-11-06b';
 const QA=['请检查并记录：右侧踝跖屈和踮脚的肌力、跟腱反射、感觉和步态，是否提示 S1 神经根损害？','右脚无力是否需要加急脊柱外科评估？要不要复查 MRI 或做其他检查？','现在适合只做门诊康复吗？建议住院的医学原因是什么？','哪些动作可以做、哪些暂缓？坐、站、走、休息各多长合适？','止痛药怎么安排？药名、剂量、疗程、胃肠副作用。','病休多久，什么时候复诊，什么条件下逐步复工？','MRI 里“腰 5 后移”和“腰 4 不稳”具体指哪一节？要不要拍动态片？'];
 const LEGP=['正常','有点软','明显发软'];
 const LOCS=['不痛','仅腰部','到臀部','到大腿','到小腿/脚'];
@@ -661,7 +667,7 @@ const lastN=(n,end=today())=>{const r=[];for(let i=n-1;i>=0;i--)r.push(addDays(e
 
 function blank(){return{version:3,days:{},weekly:{},exercises:JSON.parse(JSON.stringify(DEF_EX)),holds:JSON.parse(JSON.stringify(DEF_HOLD)),phase:0,sitMin:25,voice:true,awake:false,height:'',sex:'',goal:'keep',mods:{spine:false},theme:'art',look:'warm',prefs:{veg:false,nomilk:false,nofish:false},big:false,quiet:false,lastBackup:'',snooze:'',sitCap:360,capSet:false,tol:120,up:0,alertedB:null,qa:{},nudge:'',pos:null,alerted:null}}
 function load(){try{const r=localStorage.getItem(KEY);if(r)return Object.assign(blank(),JSON.parse(r))}catch(e){}return blank()}
-function emptyDay(){return{eatOut:false,legPain:null,legPow:null,numbMore:false,meals:{b:false,l:false,d:false,s:false},sleepMin:0,ps:{sit:0,stand:0,walk:0,lie:0},sleepStart:'',sleepEnd:'',nWake:null,stiff:null,sleep:null,
+function emptyDay(){return{eatOut:false,legPain:null,legPow:null,numbMore:false,sph:false,wk:false,meals:{b:false,l:false,d:false,s:false},sleepMin:0,ps:{sit:0,stand:0,walk:0,lie:0},sleepStart:'',sleepEnd:'',nWake:null,stiff:null,sleep:null,
  diet:{log:[],sv:{grain:0,veg:0,fruit:0,prot:0,milk:0,soy:0},whole:false,dark:false,fish:false,kinds:0,water:0,avoid:[]},
  walk:0,sport:[],sportMin:0,sitMax:0,energy:null,mood:null,stress:null,note:'',
  painAM:null,painPM:null,loc:null,numb:false,red:false,ex:{},trig:[],
@@ -676,7 +682,7 @@ function migrate(){
   if(!x.diet||typeof x.diet!=='object')x.diet=e.diet;
   for(const f in e.diet){if(!(f in x.diet))x.diet[f]=e.diet[f]}
   for(const f in e.diet.sv){if(!(f in x.diet.sv))x.diet.sv[f]=0}if(!Array.isArray(x.diet.log))x.diet.log=[];
-  if(!x.ps||typeof x.ps!=='object')x.ps=e.ps;for(const k in e.ps)x.ps[k]=+x.ps[k]||0;x.sleepMin=+x.sleepMin||0;
+  if(x.red&&!x.sph&&!x.wk)x.sph=true;if(!x.ps||typeof x.ps!=='object')x.ps=e.ps;for(const k in e.ps)x.ps[k]=+x.ps[k]||0;x.sleepMin=+x.sleepMin||0;
   x.walk=+x.walk||0;x.sitMax=+x.sitMax||0;x.sportMin=+x.sportMin||0}
  (S.exercises||[]).forEach(ex=>{if(!ex.libId){const L=LIB.find(l=>l.name===ex.name);if(L){ex.libId=L.id;if(!ex.detail||/示例|舒适速度，从/.test(ex.detail))ex.detail=L.short}}})}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));flag('')}catch(e){flag('⚠ 这个浏览器无法保存数据，请到「我的」导出备份，或换 Chrome / Safari 打开')}}
@@ -802,12 +808,16 @@ function onboardCard(){const P=S.prefs;
  <h3>饮食偏好</h3><div class="chips" style="margin-bottom:16px">${[['veg','素食（吃蛋奶）'],['nomilk','不喝奶'],['nofish','不吃鱼虾']].map(([k,n])=>`<button class="chip ${P[k]?'on':''}" data-act="pref" data-v="${k}">${n}</button>`).join('')}</div>
  <div class="rowi" style="padding:0;min-height:0;margin-bottom:16px;border-top:0"><span class="rt"><b>我有腰椎问题，要康复模块</b><small>会多出腰椎页、疼痛和康复训练记录</small></span>${sw('mod','spine',S.mods.spine)}</div>
  <div class="btns"><button class="btn" data-act="onboard">开始使用</button></div></section>`}
+function copyYBar(d){if(cur!==today()||sheet)return'';const y=S.days[addDays(cur,-1)];
+ if(!y||!(dietTouched(y.diet)||moveMin(y)>0)||dietTouched(d.diet)||moveMin(d)>0)return'';
+ return `<section class="group"><div class="rowi"><span class="rt"><b>今天和昨天差不多？</b><small>一键照昨天的饮食和运动填好，不一样的再改</small></span><button class="btn sm" data-act="copyy">照昨天填</button></div></section>`}
 function renderHome(d){
  if(!S.onboarded)return onboardCard();
  const sh=sleepHrs(d),sc=dietScore(d),mv=moveMin(d);let h='';
  if(S.mods.spine)h+=redAlert(d);
  h+=backupBanner()||todoBanner(d);
  h+=postureRow();
+ h+=copyYBar(d);
  if(sh!=null||sc!=null||mv>0)h+=`<section class="card mini">${ring([{p:(sh||0)/8,c:'var(--c-sleep)'},{p:(sc||0)/10,c:'var(--c-food)'},{p:mv/30,c:'var(--c-move)'}])}
  <div class="leg3"><div><span data-fg="sleep">睡眠</span><p><b>${sh==null?'—':f1(sh)}</b><u>小时</u></p></div>
  <div><span data-fg="food">营养</span><p><b>${sc==null?'—':sc}</b><u>/ 10</u></p></div>
@@ -869,18 +879,23 @@ function moodSheet(d){
  <section class="card"><h3>压力</h3>${lvl('stress',d.stress,['很小','较小','一般','较大','很大'])}</section>
  <section class="card"><h3>备注</h3><textarea data-f="note" style="margin-top:0" placeholder="今天特别的事、身体的变化……">${esc(d.note)}</textarea></section>`}
 
+const redOf=x=>!!(x&&(x.sph||x.wk||x.legPow===2));
 function redAlert(d){
- if(d.legPow===2)return `<div class="alert">⚠ 你记录了“腿明显发软 / 拖脚”。这可能是神经受压加重的信号，请<b>尽快联系脊柱外科 / 神经外科</b>，不要等待观察。</div>`;
- if(d.red)return `<div class="alert">⚠ 你勾选了红旗症状。会阴部麻木、大小便异常或腿部无力加重，需要<b>尽快就医</b>，不要等待观察。</div>`;
+ if(d.sph)return `<div class="alert emerg"><b>立即去急诊</b>（或拨 120）。新出现的会阴 / 马鞍区麻木，或排尿、排便异常（尿不出、失禁），是神经严重受压的警示信号，<b>不要等门诊预约，也不要继续观察</b>。到急诊说明“腰椎间盘突出，出现会阴麻木 / 大小便异常”。</div>`;
+ if(d.wk||d.legPow===2)return `<div class="alert urgent"><b>今天就要做神经检查。</b>新出现、或在加重的腿脚无力，需要尽快找脊柱外科 / 神经外科评估，今天联系医院，不要等下次复诊。如果无力在几小时到一两天内明显加重，直接去急诊。</div>`;
+ const y=S.days[addDays(cur,-1)];
+ if(d.legPow===1&&y&&y.legPow===0)return `<div class="alert soft">腿脚比昨天更软了一点。请留意：如果持续两三天、或继续加重，要联系脊柱外科 / 神经外科。</div>`;
  return''}
 function spineSheet(d){const ph=PHASES[S.phase];
  let h='';
  h+=redAlert(d);
+ {const y=S.days[addDays(cur,-1)];if(y&&(y.painAM!=null||y.painPM!=null)&&d.painAM==null&&d.painPM==null)h+=`<section class="group"><div class="rowi"><span class="rt"><b>症状和昨天一样？</b><small>只复制疼痛、力量、麻木；红旗症状不会复制</small></span><button class="btn sm" data-act="samey">和昨天一样</button></div></section>`}
  h+=`<section class="card"><h3>疼痛 · 0 不痛，10 最痛</h3><div class="lb">早上</div>${painRow('painAM',d.painAM)}<div class="lb">晚上</div>${painRow('painPM',d.painPM)}<div class="lb">腿疼（0–10）</div>${painRow('legPain',d.legPain)}<div class="lb">疼痛最远到哪里</div>${chips(LOCS,i=>d.loc===i,'loc')}</section>
- <section class="card"><h3>腿脚力量（凭感觉）</h3>${chips(['正常','有点软','明显发软 / 拖脚'],i=>d.legPow===i,'legpow')}<p class="hint" style="margin-top:8px">不用为了记录反复单脚踮脚测试，凭日常走路的感觉选。选“明显发软”会提醒你尽快就医。</p></section>
+ <section class="card"><h3>腿脚力量（凭感觉）</h3>${chips(['正常','有点软','明显发软 / 拖脚'],i=>d.legPow===i,'legpow')}<p class="hint" style="margin-top:8px">不用为了记录反复单脚踮脚测试，凭日常走路的感觉选。选“明显发软”会提醒你尽快就医。</p><p class="hint" style="margin-top:6px"><b>疼痛变轻，不等于神经恢复。</b>力量和麻木要单独看，不能因为不痛了就判断好转。</p></section>
  <section class="group"><div class="rowi"><span class="rt"><b>腿或脚有麻木感</b></span>${sw('dflag2','numb',d.numb)}</div>
  <div class="rowi"><span class="rt"><b>麻木范围扩大，或走路后更重</b></span>${sw('dflag2','numbMore',d.numbMore)}</div>
- <div class="rowi"><span class="rt"><b style="color:var(--warn)">会阴部麻木 / 大小便异常 / 腿越来越没力</b><small>出现任何一项，请尽快就医</small></span>${sw('dflag2','red',d.red,'red')}</div></section>`;
+ <div class="rowi"><span class="rt"><b style="color:var(--warn)">腿或脚无力，是新出现的，或在加重</b><small>请今天联系脊柱外科 / 神经外科做神经检查</small></span>${sw('dflag2','wk',d.wk,'red')}</div>
+ <div class="rowi"><span class="rt"><b style="color:var(--warn)">会阴部麻木 / 排尿或排便异常</b><small>属于急症，请立即去急诊</small></span>${sw('dflag2','sph',d.sph,'red')}</div></section>`;
  h+=`<section class="card"><h3>康复训练 · ${esc(ph.n)}</h3>`;
  S.exercises.forEach(e=>{const x=d.ex[e.id]||{};
   h+=`<div class="ex"><button class="tk ${x.done?'on':''}" data-act="exdone" data-id="${e.id}">${x.done?ic('check',16):''}</button><div class="exb"><div class="exn">${esc(e.name)}${e.libId?`<button class="lnk" data-act="goex" data-id="${e.libId}">要点›</button>`:''}</div><div class="hint">${esc(e.detail)}</div>${x.done?`<div class="chips" style="margin-top:8px">${FEEL.map((f,i)=>`<button class="chip sm ${x.feel===i?'on'+(i===2?' f2':''):''}" data-act="exfeel" data-id="${e.id}" data-v="${i}">做完${f}</button>`).join('')}</div>`:''}</div></div>`});
@@ -903,7 +918,7 @@ function stats(ds){
   [x.painAM,x.painPM].forEach(v=>{if(v!=null)r.max=Math.max(r.max??0,v)});
   if(x.painAM!=null)r.am.push(x.painAM);if(x.painPM!=null)r.pm.push(x.painPM);
   if(x.loc!=null)r.maxLoc=Math.max(r.maxLoc??0,x.loc);
-  if(x.numb)r.numb++;if(x.red)r.red++;
+  if(x.numb)r.numb++;if(redOf(x))r.red++;
   const sh=sleepHrs(x);if(sh!=null){r.sleepH.push(sh);any=true}
   if(x.nWake!=null)r.wake.push(x.nWake);if(x.stiff!=null)r.stiff.push(x.stiff);if(x.sleep)r.sq.push(x.sleep);
   if(x.energy){r.energy.push(x.energy);any=true}if(x.mood){r.mood.push(x.mood);any=true}if(x.stress){r.stress.push(x.stress);any=true}
@@ -935,11 +950,38 @@ function chart(days,series,o){
  return s+'</svg>'}
 function cardChart(title,sub,svg,legend=''){return `<section class="card"><h3>${title}</h3>${sub?`<div class="cnum">${sub}</div>`:''}${svg}${legend}</section>`}
 
+
+function insights(){
+ const ds=lastN(7),pd=lastN(7,addDays(today(),-7)),a=stats(ds),b=stats(pd),sp=S.mods.spine,out=[];
+ const X=ds.map(d=>S.days[d]).filter(Boolean),P=pd.map(d=>S.days[d]).filter(Boolean),c=(arr,f)=>arr.filter(f).length;
+ let painUp=false;
+ if(sp){
+  const sph=c(X,x=>x.sph);if(sph)out.push({lv:'urgent',t:`有 ${sph} 天记录了会阴麻木或排尿、排便异常。这需要立即去急诊评估。`});
+  const wk=c(X,x=>x.wk||x.legPow===2);if(wk)out.push({lv:'urgent',t:`有 ${wk} 天记录了腿脚无力新出现或加重（或明显发软）。需要尽快做神经检查，不要等疼痛好转。`});
+  const soft=c(X,x=>x.legPow===1);if(soft&&!wk)out.push({lv:'watch',t:`有 ${soft} 天腿脚有点软。请继续留意，就诊时告诉医生。`});
+  const nm=c(X,x=>x.numbMore);
+  if(nm)out.push({lv:'watch',t:`麻木范围扩大，或走路后更重：${nm} 天（上周 ${c(P,x=>x.numbMore)} 天）。`});
+  else if(a.numb>b.numb)out.push({lv:'watch',t:`腿脚麻木的天数增加了：${b.numb} → ${a.numb} 天。`});
+  const pa=avg([...a.am,...a.pm]),pb=avg([...b.am,...b.pm]);
+  if(a.am.length+a.pm.length>=4&&b.am.length+b.pm.length>=4&&pa!=null&&pb!=null){const dd=pa-pb;
+   if(dd>=1){painUp=true;out.push({lv:'watch',t:`疼痛平均 ${f1(pb)} → ${f1(pa)}，比上周高。`})}
+   else if(dd<=-1)out.push({lv:'info',t:`疼痛平均 ${f1(pb)} → ${f1(pa)}，比上周低。疼痛变轻不等于神经恢复，力量和麻木仍要单独看。`})}
+  const wz=Object.values(a.ex).reduce((s,o)=>s+o.f[2],0);if(wz>=2)out.push({lv:'watch',t:`做完训练感觉更差 ${wz} 次。把动作名告诉康复师。`});
+ }
+ const short=a.sleepH.filter(h=>h<6).length;
+ if(short>=3)out.push({lv:'watch',t:`有 ${short} 天睡眠不足 6 小时。`});
+ if(a.logged>=3&&a.mvTot<90)out.push({lv:'info',t:`这周运动共 ${a.mvTot} 分钟，低于参考的 150 分钟。`});
+ const wi=weakItems(a);if(wi.length>=2)out.push({lv:'info',t:`营养常缺：${wi.slice(0,3).map(x=>x.n).join('、')}。`});
+ if(short>=3&&painUp)out.push({lv:'note',t:'睡眠不足和疼痛上升在同一周出现。记录只能说明两件事同时发生，不能说明谁导致了谁，可以带给医生一起看。'});
+ if(a.logged<3)out.unshift({lv:'note',t:`这周只记录了 ${a.logged} 天，下面的判断参考价值有限。`});
+ if(!out.some(o=>o.lv!=='note'))out.push({lv:'info',t:'这周没有明显的变化。趋势要看更长时间才有意义，继续记就好。'});
+ return out}
 function renderTrend(){
  const days=lastN(range),g=k=>days.map(d=>S.days[d]?.[k]??null);
  const a=stats(lastN(7)),b=stats(lastN(7,addDays(today(),-7))),sp=S.mods.spine;
  const A=stats(days);
  let h=`<section style="margin:6px 16px 0"><div class="seg">${[7,14,30].map(n=>`<button data-act="range" data-v="${n}" class="${range===n?'on':''}">近 ${n} 天</button>`).join('')}</div></section>`;
+ h+=`<section class="card"><h2>本周值得关注</h2>${insights().map(o=>`<div class="ins ${o.lv}">${o.t}</div>`).join('')}</section>`;
  h+=cardChart('睡眠（小时）',`平均 ${f1(avg(A.sleepH))} 小时`,chart(days,[{v:days.map(d=>S.days[d]?sleepHrs(S.days[d]):null),c:'var(--c-sleep)'}],{max:10,bars:true,ticks:[[0,'0'],[5,'5'],[7,'7'],[10,'10']]}));
  h+=cardChart('营养均衡（满分 10）',`平均 ${f1(avg(A.dscore))} 分`,chart(days,[{v:days.map(d=>S.days[d]?dietScore(S.days[d]):null),c:'var(--c-food)'}],{max:10,bars:true,ticks:[[0,'0'],[5,'5'],[10,'10']]}));
  const mvs=days.map(d=>S.days[d]?moveMin(S.days[d])||null:null);
@@ -984,7 +1026,7 @@ function gate(){const r=stats(lastN(7));return[
  ['没有红旗症状',r.red===0,r.red+' 天']]}
 function renderSpine(){
  const ph=PHASES[S.phase];
- let h=`<section class="card"><h2>当前阶段</h2><div class="seg" style="margin:10px 0">${PHASES.map((p,i)=>`<button data-act="phase" data-v="${i}" class="${S.phase===i?'on':''}">${p.n.split(' · ')[1]}</button>`).join('')}</div><p>${ph.goal}</p></section>`;
+ let h=`<section class="card"><h2>就诊摘要</h2><p class="hint">把记录整理成一页，就诊时给医生看，或发给自己。</p><div class="btns"><button class="btn sm" data-act="vsgen" data-v="14">近 14 天</button><button class="btn sm ghost" data-act="vsgen" data-v="30">近 30 天</button></div><textarea id="vs" readonly placeholder="点上面的按钮生成" style="min-height:120px;margin-top:10px"></textarea><div class="btns"><button class="btn sm ghost" data-act="vscopy">复制</button><button class="btn sm ghost" data-act="vsshare">分享</button></div><p class="hint" style="margin-top:6px">这是自评记录，医生需要当面检查。摘要含健康隐私，请发给医生或自己，不要发到群聊。</p></section><section class="card"><h2>当前阶段</h2><div class="seg" style="margin:10px 0">${PHASES.map((p,i)=>`<button data-act="phase" data-v="${i}" class="${S.phase===i?'on':''}">${p.n.split(' · ')[1]}</button>`).join('')}</div><p>${ph.goal}</p></section>`;
  if(S.phase<2){const c=gate(),ok=c.every(x=>x[1]);
   h+=`<section class="card"><h2>升级检查</h2><p class="hint" style="margin-bottom:6px">按近 7 天数据</p>${c.map(([t,p,v])=>`<div class="crit"><span>${p?'✅':'⬜'} ${t}</span><span class="hint">${v}</span></div>`).join('')}<div class="verdict ${ok?'ok2':'no'}">${ok?'已达到条件。先和医生或康复师确认，再切换到下一阶段。':'还没达到条件，继续当前阶段。不按日期硬推进。'}</div></section>`}
  h+=`<section class="card"><h2>我的训练动作</h2><p class="hint" style="margin-bottom:6px">按医生或康复师的方案改</p>${S.exercises.map(e=>`<div class="edit"><input data-f="exn:${e.id}" value="${esc(e.name)}" placeholder="动作名称"><button class="x del" data-act="exdel" data-id="${e.id}">✕</button><input data-f="exd:${e.id}" value="${esc(e.detail)}" placeholder="组数、时长、注意事项"></div>`).join('')}<div class="btns"><button class="btn sm ghost" data-act="exadd">＋ 添加动作</button><button class="btn sm ghost" data-act="gotolib">从动作库添加</button></div></section>`;
@@ -1000,6 +1042,8 @@ function renderMe(){
  <p class="hint" style="margin-top:4px"><b>${lastBackupText()}</b></p>
  <div class="btns"><button class="btn" data-act="backup">一键备份</button><button class="btn ghost" data-act="import">从备份文件恢复</button></div>
  <p class="hint" style="margin-top:8px">点“一键备份”后在弹出的面板选“存储到文件”（建议选 iCloud 云盘），或发到备忘录 / 微信文件传输助手。</p>
+ <p class="hint" style="margin-top:8px"><b>备份里是健康隐私。</b>不要用微信、QQ 等聊天软件发送；存到「文件」的 iCloud 云盘，或发给自己的加密备忘录。</p>
+ ${(()=>{try{return localStorage.getItem(KEY+'.prev')?'<div class="btns"><button class="btn sm ghost" data-act="undoimp">撤销上次导入</button></div>':''}catch(e){return''}})()}
  <details data-id="me-bak" ${openSet.has('me-bak')?'open':''}><summary>其他方式</summary>
  <textarea id="bak" placeholder="复制备份文本后可粘贴到备忘录。恢复时粘贴到这里，再点“从文本导入”" style="min-height:72px"></textarea>
  <div class="btns"><button class="btn sm ghost" data-act="export">下载备份文件</button><button class="btn sm ghost" data-act="copybak">复制备份文本</button><button class="btn sm ghost" data-act="txtimp">从文本导入</button></div>
@@ -1025,9 +1069,39 @@ function renderMe(){
  <section class="card"><h2>周报</h2><p class="hint">复制后发给 Claude 做复盘</p><div class="btns"><button class="btn sm" data-act="report">生成近 7 天周报</button><button class="btn sm ghost" data-act="copyrep">复制</button></div><textarea id="rep" readonly placeholder="点上面的按钮生成" style="min-height:120px"></textarea></section>`;
  if(hist.length)h+=`<section class="card"><h2>体重与腰围记录</h2><table><tr><th>周</th><th>体重</th><th>腰围</th></tr>${hist.map(k=>`<tr><td>${md(k)}</td><td>${esc(S.weekly[k].wt||'—')}</td><td>${esc(S.weekly[k].wc||'—')}</td></tr>`).join('')}</table></section>`;
  h+=`<section class="card"><h2>用得久一点</h2><ul><li>在 Safari 里点分享，选“添加到主屏幕”，以后像 App 一样打开。</li><li>一天只做三件事：早上抄睡眠，吃完饭打开餐谱开关，晚上记疼痛。</li><li>每周日点「一键备份」。</li></ul><div class="btns"><button class="btn sm ghost" data-act="update">检查更新</button></div><p class="hint" style="margin-top:8px">版本 ${APP_VER}。更新后没变化，请完全关掉再打开。</p></section>
- <p class="foot">本工具用于记录和观察趋势，不能替代医生诊断。饮食和运动建议是通用参考，有疾病或不适请遵医嘱。如出现会阴部麻木、大小便异常或腿部无力加重，请立即就医。</p>`;
+ <p class="foot">本工具用于记录和观察趋势，不能替代医生诊断。饮食和运动建议是通用参考，有疾病或不适请遵医嘱。如出现会阴部麻木、排尿或排便异常，请立即去急诊；如腿脚无力新出现或在加重，请尽快找脊柱外科 / 神经外科做神经检查。</p>`;
  return h}
 
+
+function visitSummary(n){
+ const ds=lastN(n),a=stats(ds),p=stats(lastN(n,addDays(today(),-n))),X=ds.map(d=>S.days[d]).filter(Boolean);
+ const cnt=f=>X.filter(f).length,dl=f=>ds.filter(d=>S.days[d]&&f(S.days[d])).map(md).join('、')||'无';
+ const L=[`【就诊摘要】${md(ds[0])} ~ ${md(ds[n-1])}（近 ${n} 天，记录 ${a.logged} 天）`,'以下是我自己记录的，不是检查结果。',''];
+ L.push('■ 先说神经症状');
+ L.push(`会阴 / 马鞍区麻木或排尿排便异常：${cnt(x=>x.sph)} 天（${dl(x=>x.sph)}）`);
+ L.push(`腿脚无力新出现或加重：${cnt(x=>x.wk||x.legPow===2)} 天（${dl(x=>x.wk||x.legPow===2)}）`);
+ L.push(`腿脚力量自评：正常 ${cnt(x=>x.legPow===0)} 天，有点软 ${cnt(x=>x.legPow===1)} 天，明显发软 / 拖脚 ${cnt(x=>x.legPow===2)} 天`);
+ L.push(`腿脚麻木 ${a.numb} 天；麻木范围扩大或走路后更重 ${cnt(x=>x.numbMore)} 天（${dl(x=>x.numbMore)}）`);
+ L.push('我自己的感觉：右脚踮脚用不上力的情况是否持续，需要请医生当面检查（我记录里没有客观测试）。','');
+ L.push('■ 疼痛');
+ L.push(`早上平均 ${f1(avg(a.am))}（此前 ${n} 天 ${f1(avg(p.am))}），晚上平均 ${f1(avg(a.pm))}（此前 ${f1(avg(p.pm))}），最高 ${a.max??'—'}；疼痛最远到 ${a.maxLoc==null?'—':LOCS[a.maxLoc]}`);
+ L.push('注意：疼痛变轻不一定表示神经在恢复，力量和麻木要单独评估。','');
+ L.push('■ 什么情况让症状变重');
+ L.push(`常见诱因：${topTrig(a)}`);
+ const sitD=X.filter(x=>x.ps&&x.ps.sit>0);
+ L.push('■ 活动耐受');
+ L.push(`有运动记录的日子，平均每天 ${f1(avg(X.map(moveMin).filter(v=>v>0)))} 分钟（${X.filter(x=>moveMin(x)>0).length} 天有记录）；连续坐的最长时间平均 ${f1(avg(a.sit))} 分钟`);
+ if(sitD.length){const av=k=>f1(avg(X.filter(x=>x.ps&&(x.ps.sit+x.ps.stand+x.ps.walk+x.ps.lie)>0).map(x=>x.ps[k]/3600)));L.push(`姿势计时平均（小时/天）：坐 ${av('sit')}、站 ${av('stand')}、走 ${av('walk')}、躺 ${av('lie')}`)}
+ L.push(`我自己设的连续直立耐受：${S.tol} 分钟；每天坐上限：${f1(S.sitCap/60)} 小时`,'');
+ L.push('■ 睡眠');
+ L.push(`平均 ${f1(avg(a.sleepH))} 小时，不足 6 小时 ${a.sleepH.filter(h=>h<6).length} 天；夜醒平均 ${f1(avg(a.wake))} 次；早上腰部僵硬平均 ${f1(avg(a.stiff))}（0 无，越大越久）`,'');
+ const worse=Object.entries(a.ex).filter(([,o])=>o.f[2]>0).map(([id,o])=>`${exName(id)}×${o.f[2]}`).join('、');
+ L.push('■ 康复训练');L.push(`完成率 ${adherence(a,n)??'—'}%；做完感觉更差：${worse||'无'}`,'');
+ const w=Object.keys(S.weekly).sort().filter(k=>+S.weekly[k].wt>0).slice(-2);
+ if(w.length)L.push('■ 体重',w.map(k=>md(k)+' '+S.weekly[k].wt+' kg').join('；'),'');
+ const q=QA.filter((_,i)=>!S.qa[i]);
+ L.push('■ 想问医生的问题（还没问）');q.forEach((t,i)=>L.push((i+1)+'. '+t));if(!q.length)L.push('（清单里的问题都已问过）');
+ return L.join('\n')}
 function report(){
  const ds=lastN(7),a=stats(ds),b=stats(lastN(7,addDays(today(),-7))),sp=S.mods.spine;
  const w=S.weekly[mondayOf(today())]||{};
@@ -1047,7 +1121,7 @@ function report(){
  ds.forEach(d=>{const x=S.days[d];if(!x){L.push(`${md(d)} ${wday(d)}：未记录`);return}
   const sh=sleepHrs(x),sc=dietScore(x),p=[`睡${sh==null?'-':f1(sh)+'h'}`,`营养${sc==null?'-':sc+'/10'}`,`运动${moveMin(x)||'-'}分`];
   if(sp){const ex=S.exercises.filter(e=>x.ex[e.id]?.done).map(e=>e.name+(x.ex[e.id].feel!=null?'('+FEEL[x.ex[e.id].feel]+')':'')).join(' ');
-   p.push(`疼痛早${x.painAM??'-'}晚${x.painPM??'-'}`,'腿疼'+(x.legPain??'-'),x.loc==null?'位置-':LOCS[x.loc],'腿力'+(LEGP[x.legPow]??'-'));if(x.numbMore)p.push('麻木加重');if(x.numb)p.push('麻木');if(x.red)p.push('红旗!');p.push('训练：'+(ex||'无'));if(x.trig.length)p.push('诱因：'+x.trig.join('、'))}
+   p.push(`疼痛早${x.painAM??'-'}晚${x.painPM??'-'}`,'腿疼'+(x.legPain??'-'),x.loc==null?'位置-':LOCS[x.loc],'腿力'+(LEGP[x.legPow]??'-'));if(x.numbMore)p.push('麻木加重');if(x.numb)p.push('麻木');if(x.sph)p.push('会阴麻木/大小便异常!');if(x.wk||x.legPow===2)p.push('腿无力新发或加重!');p.push('训练：'+(ex||'无'));if(x.trig.length)p.push('诱因：'+x.trig.join('、'))}
   if(x.ps&&x.ps.sit>0)p.push('坐'+f1(x.ps.sit/3600)+'h');
   if(x.note)p.push('备注：'+x.note);L.push(`${md(d)} ${wday(d)}：`+p.join('｜'))});
  return L.join('\n')}
@@ -1156,14 +1230,20 @@ document.addEventListener('click',e=>{
   case 'menuoff':menuOff=+v;break;
   case 'tstart':timer.due=false;timer.end=Date.now()+S.sitMin*60000;document.title='健康小助手';try{navigator.vibrate&&navigator.vibrate(1)}catch(e){}break;
   case 'tstop':timer.end=null;timer.due=false;break;
+  case 'copyy':{d=W(cur);const y=S.days[addDays(cur,-1)];if(!y)break;d.diet=JSON.parse(JSON.stringify(y.diet));d.meals=JSON.parse(JSON.stringify(y.meals||d.meals));d.eatOut=!!y.eatOut;d.walk=y.walk;d.sport=JSON.parse(JSON.stringify(y.sport||[]));d.sportMin=y.sportMin;toast('已照昨天填好，不一样的再改');break}
+  case 'samey':{d=W(cur);const y=S.days[addDays(cur,-1)];if(!y)break;['painAM','painPM','legPain','loc','legPow','numb','numbMore'].forEach(k=>d[k]=y[k]);toast('已照昨天填好，有变化的再改');break}
+  case 'undoimp':{let r=null;try{r=localStorage.getItem(KEY+'.prev')}catch(e){}if(!r)break;if(!confirm('撤销上次导入，恢复到导入之前的数据？'))return;try{S=Object.assign(blank(),JSON.parse(r));migrate();localStorage.removeItem(KEY+'.prev');save();toast('已恢复')}catch(_){alert('没能恢复')}break}
+  case 'vsgen':document.getElementById('vs').value=visitSummary(+v);return;
+  case 'vscopy':{const ta=document.getElementById('vs');if(!ta.value)ta.value=visitSummary(14);copy(ta.value,ta);return}
+  case 'vsshare':{const ta=document.getElementById('vs');if(!ta.value)ta.value=visitSummary(14);if(navigator.share)navigator.share({title:'就诊摘要',text:ta.value}).catch(()=>{});else copy(ta.value,ta);return}
   case 'report':document.getElementById('rep').value=report();return;
   case 'copyrep':{const ta=document.getElementById('rep');if(!ta.value)ta.value=report();copy(ta.value,ta);return}
   case 'backup':doBackup();return;
   case 'snooze':S.snooze=today();break;
   case 'export':S.lastBackup=today();save();exportData();render();return;
   case 'import':document.getElementById('imp').click();return;
-  case 'copybak':{S.lastBackup=today();save();const ta=document.getElementById('bak');ta.value=JSON.stringify(S);copy(ta.value,ta);return}
-  case 'txtimp':{const ta=document.getElementById('bak');try{const o=JSON.parse(ta.value);if(!o||typeof o.days!=='object')throw 0;if(!confirm('导入会覆盖当前数据，确定吗？'))return;S=Object.assign(blank(),o);migrate();save();render();toast('导入成功')}catch(_){alert('文本格式不对，请粘贴完整的备份文本')}return}
+  case 'copybak':{S.lastBackup=today();save();const ta=document.getElementById('bak');ta.value=exportJson();copy(ta.value,ta);return}
+  case 'txtimp':{const ta=document.getElementById('bak');let o=null;try{o=JSON.parse(ta.value)}catch(_){}applyImport(o);return}
   case 'reset':if(!confirm('确定清空全部数据？建议先备份。'))return;if(!confirm('再次确认：清空后无法恢复。'))return;S=blank();break;
   default:return}
  save();render();syncWake()});
@@ -1191,20 +1271,31 @@ function lastBackupText(){if(!S.lastBackup)return'还没有备份过';
  const d=Math.round((parse(today())-parse(S.lastBackup))/864e5),p=S.lastBackup.split('-');
  return `上次备份：${+p[1]}/${+p[2]}（${d<=0?'今天':d+' 天前'}）`}
 async function doBackup(){const prev=S.lastBackup;S.lastBackup=today();
- const json=JSON.stringify(S),name=`健康小助手备份-${today()}.json`;
+ const json=exportJson(),name=`健康小助手备份-${today()}.json`;
  try{if(navigator.share){let file=null;try{file=new File([json],name,{type:'application/json'})}catch(e){}
   if(file&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'健康小助手备份'});save();render();toast('已备份');return}
   await navigator.share({title:'健康小助手备份 '+today(),text:json});save();render();toast('已备份');return}}
  catch(e){S.lastBackup=prev;if(e&&e.name==='AbortError')return}
  S.lastBackup=today();save();exportData();render()}
+function hash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
+function exportJson(){S.backupAt=new Date().toISOString();return JSON.stringify(Object.assign({},S,{_sum:hash(JSON.stringify(S.days))}))}
+function applyImport(o){
+ try{if(!o||typeof o!=='object'||!o.days||typeof o.days!=='object'||Array.isArray(o.days))throw 0;
+  const keys=Object.keys(o.days).filter(k=>/^\d{4}-\d{2}-\d{2}$/.test(k)).sort();
+  if(Object.keys(o.days).length&&!keys.length)throw 0;
+  const warn=o._sum&&o._sum!==hash(JSON.stringify(o.days))?'\n\n⚠ 校验没通过：文件可能被改动或损坏，请确认来源。':'';
+  const msg=`备份内容：${keys.length} 天记录${keys.length?`（${md(keys[0])} ~ ${md(keys[keys.length-1])}）`:''}${o.backupAt?'，备份于 '+String(o.backupAt).slice(0,10):''}。\n这台手机现在有 ${Object.keys(S.days).length} 天记录，导入后会被替换。\n导入前会先把现在的数据另存一份，可在「我的」撤销。${warn}\n\n确定导入吗？`;
+  if(!confirm(msg))return false;
+  try{localStorage.setItem(KEY+'.prev',JSON.stringify(S))}catch(e){}
+  delete o._sum;S=Object.assign(blank(),o);migrate();save();render();toast('导入成功');return true}
+ catch(e){alert('文件格式不对，请选择本工具导出的备份文件');return false}}
 function exportData(){
- const blob=new Blob([JSON.stringify(S)],{type:'application/json'});
+ const blob=new Blob([exportJson()],{type:'application/json'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`健康小助手备份-${today()}.json`;
  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('已导出')}
 document.getElementById('imp').addEventListener('change',e=>{
  const f=e.target.files[0];if(!f)return;const r=new FileReader();
- r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||typeof o.days!=='object')throw 0;
-  if(!confirm('导入会覆盖当前数据，确定吗？'))return;S=Object.assign(blank(),o);migrate();save();render();toast('导入成功')}catch(_){alert('文件格式不对，请选择本工具导出的备份文件')}
+ r.onload=()=>{let o=null;try{o=JSON.parse(r.result)}catch(_){}applyImport(o);
   e.target.value=''};r.readAsText(f)});
 
 ['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
