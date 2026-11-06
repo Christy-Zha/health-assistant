@@ -611,7 +611,7 @@ function renderPlan(){
 </script>
 <script>
 const KEY='lumbarHelper.v1';
-const APP_VER='2026-11-05j';
+const APP_VER='2026-11-06a';
 const QA=['请检查并记录：右侧踝跖屈和踮脚的肌力、跟腱反射、感觉和步态，是否提示 S1 神经根损害？','右脚无力是否需要加急脊柱外科评估？要不要复查 MRI 或做其他检查？','现在适合只做门诊康复吗？建议住院的医学原因是什么？','哪些动作可以做、哪些暂缓？坐、站、走、休息各多长合适？','止痛药怎么安排？药名、剂量、疗程、胃肠副作用。','病休多久，什么时候复诊，什么条件下逐步复工？','MRI 里“腰 5 后移”和“腰 4 不稳”具体指哪一节？要不要拍动态片？'];
 const LEGP=['正常','有点软','明显发软'];
 const LOCS=['不痛','仅腰部','到臀部','到大腿','到小腿/脚'];
@@ -659,23 +659,23 @@ const avg=a=>a.length?a.reduce((s,v)=>s+v,0)/a.length:null;
 const f1=v=>v==null?'—':String(Math.round(v*10)/10);
 const lastN=(n,end=today())=>{const r=[];for(let i=n-1;i>=0;i--)r.push(addDays(end,-i));return r};
 
-function blank(){return{version:3,days:{},weekly:{},exercises:JSON.parse(JSON.stringify(DEF_EX)),holds:JSON.parse(JSON.stringify(DEF_HOLD)),phase:0,sitMin:40,height:'',sex:'',goal:'keep',mods:{spine:false},theme:'art',look:'warm',prefs:{veg:false,nomilk:false,nofish:false},big:false,quiet:false,lastBackup:'',snooze:'',sitCap:360,capSet:false,tol:120,up:0,alertedB:null,qa:{},nudge:'',pos:null,alerted:null}}
+function blank(){return{version:3,days:{},weekly:{},exercises:JSON.parse(JSON.stringify(DEF_EX)),holds:JSON.parse(JSON.stringify(DEF_HOLD)),phase:0,sitMin:25,voice:true,awake:false,height:'',sex:'',goal:'keep',mods:{spine:false},theme:'art',look:'warm',prefs:{veg:false,nomilk:false,nofish:false},big:false,quiet:false,lastBackup:'',snooze:'',sitCap:360,capSet:false,tol:120,up:0,alertedB:null,qa:{},nudge:'',pos:null,alerted:null}}
 function load(){try{const r=localStorage.getItem(KEY);if(r)return Object.assign(blank(),JSON.parse(r))}catch(e){}return blank()}
 function emptyDay(){return{eatOut:false,legPain:null,legPow:null,numbMore:false,meals:{b:false,l:false,d:false,s:false},sleepMin:0,ps:{sit:0,stand:0,walk:0,lie:0},sleepStart:'',sleepEnd:'',nWake:null,stiff:null,sleep:null,
- diet:{sv:{grain:0,veg:0,fruit:0,prot:0,milk:0,soy:0},whole:false,dark:false,fish:false,kinds:0,water:0,avoid:[]},
+ diet:{log:[],sv:{grain:0,veg:0,fruit:0,prot:0,milk:0,soy:0},whole:false,dark:false,fish:false,kinds:0,water:0,avoid:[]},
  walk:0,sport:[],sportMin:0,sitMax:0,energy:null,mood:null,stress:null,note:'',
  painAM:null,painPM:null,loc:null,numb:false,red:false,ex:{},trig:[],
  tasks:[{t:'',done:false},{t:'',done:false},{t:'',done:false}]}}
 let S=load();migrate();
 function migrate(){
  if((S.version||0)<3)S.mods={spine:true};
- S.version=3;if(!(S.sitCap>0))S.sitCap=360;if(!S.capSet&&S.sitCap===480)S.sitCap=360;if(!(S.tol>0))S.tol=120;if(S.up==null)S.up=0;if(S.alertedB===undefined)S.alertedB=null;if(!S.qa||typeof S.qa!=='object')S.qa={};if(S.nudge==null)S.nudge='';if(S.pos===undefined)S.pos=null;if(S.alerted===undefined)S.alerted=null;if(S.lastBackup==null)S.lastBackup='';if(S.snooze==null)S.snooze='';if(S.onboarded===undefined)S.onboarded=Object.keys(S.days||{}).length>0;if(!S.prefs||typeof S.prefs!=='object')S.prefs={veg:false,nomilk:false,nofish:false};if(!S.theme)S.theme='art';if(!S.look)S.look='warm';if(S.big==null)S.big=false;if(S.quiet==null)S.quiet=false;if(S.height==null)S.height='';if(S.sex==null)S.sex='';if(!S.goal)S.goal='keep';
+ S.version=3;if(!S.smMig){S.smMig=1;if(S.sitMin===40)S.sitMin=25}if(S.voice===undefined)S.voice=true;if(S.awake===undefined)S.awake=false;if(!(S.sitCap>0))S.sitCap=360;if(!S.capSet&&S.sitCap===480)S.sitCap=360;if(!(S.tol>0))S.tol=120;if(S.up==null)S.up=0;if(S.alertedB===undefined)S.alertedB=null;if(!S.qa||typeof S.qa!=='object')S.qa={};if(S.nudge==null)S.nudge='';if(S.pos===undefined)S.pos=null;if(S.alerted===undefined)S.alerted=null;if(S.lastBackup==null)S.lastBackup='';if(S.snooze==null)S.snooze='';if(S.onboarded===undefined)S.onboarded=Object.keys(S.days||{}).length>0;if(!S.prefs||typeof S.prefs!=='object')S.prefs={veg:false,nomilk:false,nofish:false};if(!S.theme)S.theme='art';if(!S.look)S.look='warm';if(S.big==null)S.big=false;if(S.quiet==null)S.quiet=false;if(S.height==null)S.height='';if(S.sex==null)S.sex='';if(!S.goal)S.goal='keep';
  if(!S.mods||typeof S.mods!=='object')S.mods={spine:true};if(S.mods.spine==null)S.mods.spine=true;
  for(const k in S.days){const x=S.days[k],e=emptyDay();
   for(const f in e){if(!(f in x))x[f]=e[f]}
   if(!x.diet||typeof x.diet!=='object')x.diet=e.diet;
   for(const f in e.diet){if(!(f in x.diet))x.diet[f]=e.diet[f]}
-  for(const f in e.diet.sv){if(!(f in x.diet.sv))x.diet.sv[f]=0}
+  for(const f in e.diet.sv){if(!(f in x.diet.sv))x.diet.sv[f]=0}if(!Array.isArray(x.diet.log))x.diet.log=[];
   if(!x.ps||typeof x.ps!=='object')x.ps=e.ps;for(const k in e.ps)x.ps[k]=+x.ps[k]||0;x.sleepMin=+x.sleepMin||0;
   x.walk=+x.walk||0;x.sitMax=+x.sitMax||0;x.sportMin=+x.sportMin||0}
  (S.exercises||[]).forEach(ex=>{if(!ex.libId){const L=LIB.find(l=>l.name===ex.name);if(L){ex.libId=L.id;if(!ex.detail||/示例|舒适速度，从/.test(ex.detail))ex.detail=L.short}}})}
@@ -730,14 +730,14 @@ function boutSecs(){const p=S.pos;return p&&p.k&&p.k!=='lie'&&S.up?Math.max(0,(D
 function setPos(k){posFlush();const now=Date.now(),was=S.pos&&S.pos.k&&S.pos.k!=='lie';
  if(S.pos&&S.pos.k===k){S.pos=null;S.up=0;timer.end=null;timer.due=false;document.title='健康小助手'}
  else{S.pos={k,t:now,s:now};if(k==='lie')S.up=0;else if(!was)S.up=now;
-  if(k==='sit'){timer.end=now+S.sitMin*60000;timer.due=false}else{timer.end=null;timer.due=false;document.title='健康小助手'}}}
-function posInit(){posFlush();if(S.pos&&S.pos.k&&S.pos.k!=='lie'&&!S.up)S.up=S.pos.s||S.pos.t;if(S.pos&&S.pos.k==='sit'){const e=(S.pos.s||S.pos.t)+S.sitMin*60000;if(e>Date.now())timer.end=e;else timer.due=true}save()}
+  if(k==='sit'||k==='stand'){timer.end=now+S.sitMin*60000;timer.due=false;timer.nag=0}else{timer.end=null;timer.due=false;timer.nag=0;document.title='健康小助手'}}}
+function posInit(){posFlush();if(S.pos&&S.pos.k&&S.pos.k!=='lie'&&!S.up)S.up=S.pos.s||S.pos.t;if(S.pos&&(S.pos.k==='sit'||S.pos.k==='stand')){const e=(S.pos.s||S.pos.t)+S.sitMin*60000;if(e>Date.now())timer.end=e;else timer.due=true}save()}
 function capCheck(){const p=S.pos;if(!p||p.k!=='sit')return;const cap=S.sitCap*60,sit=posSecs('sit');
  const lv=sit>=cap?2:sit>=cap*.8?1:0,a=S.alerted&&S.alerted.d===today()?S.alerted.l:0;
- if(lv>a){S.alerted={d:today(),l:lv};save();try{navigator.vibrate&&navigator.vibrate([400,200,400])}catch(e){}beep();
+ if(lv>a){S.alerted={d:today(),l:lv};save();cue(lv===2?'今天坐的时间已到上限':'今天已坐到上限的百分之八十，多站多走');
   toast(lv===2?'⏰ 今天坐的时间已到上限':'⏰ 今天已坐到上限的 80%，多站多走');if(tab==='today')render()}}
 function boutCheck(){const sec=boutSecs();if(!sec)return;const tol=S.tol*60,lv=sec>=tol?2:sec>=tol*.8?1:0,a=S.alertedB&&S.alertedB.u===S.up?S.alertedB.l:0;
- if(lv>a){S.alertedB={u:S.up,l:lv};save();try{navigator.vibrate&&navigator.vibrate([400,200,400])}catch(e){}beep();
+ if(lv>a){S.alertedB={u:S.up,l:lv};save();cue(lv===2?'连续直立已到耐受时长，请去躺一会儿':'连续直立快到耐受时长了，找时间躺下');
   toast(lv===2?'⏰ 连续直立已到耐受时长，去躺一会儿':'⏰ 连续直立快到耐受时长了，找时间躺下');if(tab==='today')render()}}
 function tickPos(){const p=S.pos;
  if(p&&p.k&&ymd(new Date(p.t))!==today()){posFlush();save();render();return}
@@ -752,8 +752,8 @@ function postureRow(){
  let w='';
  if(up&&bs>=tol*.8)w+=`<div class="pwarn ${bs>=tol?'hot':''}">已连续直立 ${fmtDur(bs)}，${bs>=tol?'超过了':'到了'}耐受时长（${S.tol} 分钟）${bs>=tol?'':'的 80%'}。找个地方平躺屈膝 20–30 分钟。</div><div class="btns"><button class="btn sm" data-act="pos" data-v="lie">去躺着</button></div>`;
  if(sit>=cap*.8)w+=`<div class="pwarn ${sit>=cap?'hot':''}">今天已坐 ${fmtDur(sit)}，${sit>=cap?'已超过':'到了'}上限（${fmtDur(cap)}）${sit>=cap?'':'的 80%'}。多站一站、走一走。</div>`;
- if(timer.due)w+=`<div class="pwarn">该起身活动 2–3 分钟了</div><div class="btns"><button class="btn sm" data-act="pos" data-v="stand">我站起来了</button><button class="btn sm ghost" data-act="tstart">再坐 ${S.sitMin} 分钟</button></div>`;
- else if(run==='sit'&&timer.end)w+=`<div class="phint" id="tleft"></div>`;
+ if(timer.due)w+=`<div class="pwarn">${run==='stand'?'站了一阵了，走一走或坐下歇一会':'该起身活动 2–3 分钟了'}</div><div class="btns">${run==='stand'?'<button class="btn sm" data-act="pos" data-v="walk">我走一走</button>':'<button class="btn sm" data-act="pos" data-v="stand">我站起来了</button>'}<button class="btn sm ghost" data-act="tstart">再${run==='stand'?'站':'坐'} ${S.sitMin} 分钟</button></div>`;
+ else if((run==='sit'||run==='stand')&&timer.end)w+=`<div class="phint" id="tleft"></div>`;
  return `<section class="card posc"><div class="prow"><span><b>姿势计时</b><small id="plive">${run?`正在「${POSN[p.k]}」· ${fmtClock((Date.now()-(p.s||p.t))/1000)}`:'换姿势时点一下，再点一次当前姿势就暂停'}</small></span><button class="btn sm ghost" data-act="open" data-v="posture">详情</button></div>
  <div class="seg4">${POS.map(([k,n,c])=>`<button class="pb ${run===k?'on':''}" data-act="pos" data-v="${k}" style="--pc:var(${c})">${n}<small id="pt-${k}">${fmtShort(posSecs(k))}</small></button>`).join('')}</div>
  ${up?`<div class="phint" id="pup" style="margin-top:12px">连续直立 ${fmtDur(bs)} / 耐受 ${S.tol} 分钟（${Math.round(S.tol*.8)} 分钟提醒）</div><div class="pbar ${bs>=tol?'hot':''}" style="margin-top:6px"><i id="pupfill" style="width:${Math.min(100,bs/tol*100)}%"></i><u></u></div>`:''}
@@ -774,10 +774,13 @@ function postureSheet(d){const sp=S.mods.spine,capH=S.sitCap/60;
  <div class="stat"><span>坐</span><b>不超过 ${f1(capH)} 小时<br>到 ${f1(capH*.8)} 小时提醒你</b></div>
  <div class="stat"><span>站</span><b>2–4 小时</b></div>
  <div class="stat"><span>走</span><b>至少 1 小时，分几次，每次 10 分钟以上</b></div>
- <p class="hint" style="margin-top:10px">举个例子：睡 8 · 坐 8 · 站 3 · 走 1.5 · 其余（吃饭、洗漱、路上）3.5。坐的时候每 ${S.sitMin} 分钟起身 2–3 分钟。通用参考。</p></section>`);
+ <p class="hint" style="margin-top:10px">举个例子：睡 8 · 坐 8 · 站 3 · 走 1.5 · 其余（吃饭、洗漱、路上）3.5。坐着或站着，每 ${S.sitMin} 分钟动一动 2–3 分钟。通用参考。</p></section>`);
  h+=`<section class="group">`+(sp?`<div class="rowi"><span class="rt"><b>连续直立的耐受</b><small>分钟，到 80% 提醒你躺下</small></span><input class="inl" type="number" inputmode="numeric" data-f="tolMin" value="${S.tol}"></div>`:'')+`
  <div class="rowi"><span class="rt"><b>每天坐的上限</b><small>小时，到 80% 时提醒你</small></span><input class="inl" type="number" inputmode="decimal" step="0.5" data-f="sitCapH" value="${capH}"></div>
- <div class="rowi"><span class="rt"><b>起身提醒间隔</b><small>分钟，坐下后开始算</small></span><input class="inl" type="number" inputmode="numeric" data-f="sitMin" value="${S.sitMin}"></div></section>`;
+ <div class="rowi"><span class="rt"><b>起身提醒间隔</b><small>分钟，坐着或站着后开始算</small></span><input class="inl" type="number" inputmode="numeric" data-f="sitMin" value="${S.sitMin}"></div>
+ <div class="rowi"><span class="rt"><b>语音播报</b><small>到点用声音说出来；iPhone 侧边静音键要关</small></span>${sw('voice','x',S.voice!==false)}</div>
+ <div class="rowi"><span class="rt"><b>提醒期间保持屏幕常亮</b><small>锁屏后网页会暂停、不会提醒，常亮才不会错过。更耗电</small></span>${sw('awake','x',S.awake)}</div>
+ <div class="rowi"><span class="rt"><b>试听提醒</b><small>确认声音能听到</small></span><button class="btn sm ghost" data-act="cuetest">试听</button></div></section>`;
  h+=`<section class="group">${POS.map(([k,n])=>`<div class="rowi"><span class="rt"><b>${n}</b><small>忘了点的时候，在这里补</small></span><div class="stp wide"><button data-act="padj" data-k="${k}" data-v="-15">−15</button><b>${fmtShort(sec[k])}</b><button data-act="padj" data-k="${k}" data-v="15">＋15</button></div></div>`).join('')}</section>`;
  h+=`<section class="card"><h3>近 7 天（小时）</h3><table><tr><th>日</th><th>坐</th><th>站</th><th>走</th><th>躺</th></tr>${lastN(7).map(x=>`<tr><td>${md(x)}</td>${POS.map(([k])=>`<td>${f1(posSecs(k,x)/3600)}</td>`).join('')}</tr>`).join('')}</table></section>
  <section class="card"><p class="hint">提醒只在网页开着时弹出。iPhone 锁屏后网页会暂停，回到小助手时才补提醒，但计时本身按时钟算，不会少。点「躺」或暂停，都会让“连续直立”重新开始算。想要锁屏也提醒，可以再开 Apple Watch 的站立提醒做双保险。</p></section>`;
@@ -835,6 +838,11 @@ function dietSheet(d){const t=d.diet,sc=dietScore(d),gaps=dietGaps(d),m0=menuFor
  <section class="group"><div class="rowi"><span class="rt"><b>今天外食，不按餐谱</b><small>下面的餐谱会换成外食的吃法</small></span>${sw('eatout','x',d.eatOut)}</div></section>
  <section class="group">${MEAL_N.map(([k,n])=>`<div class="rowi"><span class="rt"><b>${n}</b><small>${esc(m[k])}</small></span>${sw('meal',k,mt[k])}</div>`).join('')}</section>
  <div class="btns" style="margin:0 16px 12px"><button class="btn sm" data-act="mealall">全部照着吃了</button><button class="btn sm ghost" data-act="mealclear">清空今天的饮食</button></div>
+ <section class="card"><h3>手动记一笔</h3><p class="hint" style="margin-bottom:8px">餐谱里没有的、外面吃的，在这里写。选类别并填克数，会自动换算成份数。</p>
+ <input id="dn" placeholder="吃了什么，比如：牛肉面一碗" style="width:100%">
+ <div class="two" style="margin-top:8px"><label>类别<select id="dk"><option value="">不计份数</option>${GROUPS.map(g=>`<option value="${g.k}">${g.n}</option>`).join('')}</select></label><label>克数（毫升）<input id="dg" type="number" inputmode="decimal" placeholder="可不填，默认 1 份"></label></div>
+ <div class="btns"><button class="btn sm" data-act="dadd">记下来</button></div>
+ ${(t.log||[]).length?`<div style="margin-top:10px">${t.log.map(e=>`<div class="stat"><span>${esc(e.n)}<br><small class="hint">${e.k?GROUPS.find(g=>g.k===e.k).n+(e.g?' '+e.g+' g':'')+' · +'+e.sv+' 份':'未计份数'}</small></span><button class="btn sm ghost" data-act="ddel" data-id="${e.id}">删除</button></div>`).join('')}</div>`:''}</section>
  <section class="group">`+GROUPS.map(g=>{const n=t.sv[g.k],st=n>=g.lo?(n>g.hi&&g.k!=='veg'?'high':'ok'):'';
   return `<div class="rowi"><span class="rt"><b>${g.n}</b><small>目标 ${g.lo}${g.hi>g.lo?'–'+g.hi:''} 份 · ${esc(g.unit.replace(/^1 份 ≈ /,''))}</small></span>${stp('sv.'+g.k,n,1,st)}</div>`}).join('')+`
  <div class="rowi"><span class="rt"><b>饮水</b><small>每杯约 250 ml，目标 6–7 杯</small></span>${stp('water',t.water,1,t.water>=6?'ok':'')}</div></section>
@@ -996,6 +1004,12 @@ function renderMe(){
  <textarea id="bak" placeholder="复制备份文本后可粘贴到备忘录。恢复时粘贴到这里，再点“从文本导入”" style="min-height:72px"></textarea>
  <div class="btns"><button class="btn sm ghost" data-act="export">下载备份文件</button><button class="btn sm ghost" data-act="copybak">复制备份文本</button><button class="btn sm ghost" data-act="txtimp">从文本导入</button></div>
  <div class="btns"><button class="btn sm danger" data-act="reset">清空全部数据</button></div></details></section>
+ <section class="card"><h2>从苹果「健康」导入</h2><p class="hint">网页读不到「健康」里的数据，需要靠一条「快捷指令」把体重、睡眠、运动分钟复制出来，再在这里一键导入。</p>
+ <div class="btns"><button class="btn" data-act="hkimport">从剪贴板导入</button></div>
+ <details data-id="me-hk" ${openSet.has('me-hk')?'open':''}><summary>怎么设置快捷指令（一次）</summary>
+ <ol class="hint" style="padding-left:18px;margin-top:6px"><li>打开 iPhone「快捷指令」→ 右上角「＋」新建。</li><li>添加「查找健康样本」：类型选「体重」，排序「开始日期」最新在前，限制 1 个。</li><li>再添加「文本」，内容写：<br><b>wt:</b>（点变量，选上一步的“值”）</li><li>最后添加「拷贝到剪贴板」，命名为“导出健康”。</li><li>每天运行一次，回到小助手点上面的「从剪贴板导入」。</li></ol>
+ <p class="hint" style="margin-top:6px">文本里可用的项：<b>wt</b> 体重 kg、<b>sleep</b> 睡眠分钟、<b>walk</b> 运动分钟，用逗号隔开，如 <b>wt:65.2,sleep:430,walk:30</b>。导入的是今天；要补某天，加 <b>d:2026-11-05</b>。</p>
+ <p class="hint" style="margin-top:6px">饮食：「健康」里只有热量、蛋白质这类营养素，没有“几份”，所以不导入。要记饮食请用饮食页的「手动记一笔」。</p></details></section>
  <section class="group"><details data-id="me-body" ${openSet.has('me-body')?'open':''}><summary style="padding:14px 16px">身体数据与目标（可选）</summary>
  <div class="rowi"><span class="rt"><b>性别</b><small>用于参考腰围标准</small></span><div class="seg" style="width:150px">${[['m','男'],['f','女'],['','不填']].map(([v,l])=>`<button data-act="sex" data-v="${v}" class="${S.sex===v?'on':''}">${l}</button>`).join('')}</div></div>
  <div class="rowi"><span class="rt"><b>身高</b><small>cm，只填一次</small></span><input class="inl" type="number" inputmode="decimal" data-f="ht" placeholder="—" value="${esc(S.height)}"></div>
@@ -1056,10 +1070,20 @@ function render(){
  document.getElementById('nav').innerHTML=NAV.filter(n=>n[0]!=='spine'||S.mods.spine).map(([k,n,i])=>`<button data-tab="${k}" class="${tab===k?'on':''}">${ic(i,24)}<span>${n}</span></button>`).join('');
  window.scrollTo(0,sy);tickTimer()}
 
+function say(t){if(S.voice===false)return;try{const u=new SpeechSynthesisUtterance(t);u.lang='zh-CN';speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+function cue(t){try{navigator.vibrate&&navigator.vibrate([400,200,400])}catch(e){}beep();say(t)}
+let wl=null;async function syncWake(){try{const on=S.awake&&S.pos&&(S.pos.k==='sit'||S.pos.k==='stand');if(on&&!wl&&navigator.wakeLock){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}else if(!on&&wl){await wl.release();wl=null}}catch(e){wl=null}}
+document.addEventListener('click',function(){try{speechSynthesis.speak(new SpeechSynthesisUtterance(''))}catch(e){}},{once:true});
+function hkApply(t){const o={};String(t||'').split(/[,;&\n，；\s]+/).forEach(p=>{const i=p.search(/[:=：]/);if(i>0)o[p.slice(0,i).trim().toLowerCase()]=p.slice(i+1).trim()});
+ const day=/^\d{4}-\d{2}-\d{2}$/.test(o.d||'')?o.d:today(),got=[];const wt=parseFloat(o.wt);
+ if(wt>20&&wt<300){(S.weekly[mondayOf(day)]=S.weekly[mondayOf(day)]||{}).wt=String(Math.round(wt*10)/10);got.push('体重 '+wt+' kg')}
+ const sl=parseFloat(o.sleep);if(sl>=30&&sl<=1440){W(day).sleepMin=Math.round(sl);got.push('睡眠 '+Math.floor(sl/60)+' 小时 '+Math.round(sl%60)+' 分')}
+ const wk=parseFloat(o.walk);if(wk>=0&&wk<=600){W(day).walk=Math.round(wk);got.push('运动 '+Math.round(wk)+' 分钟')}
+ if(got.length)save();return got}
 function beep(){try{const c=new(window.AudioContext||window.webkitAudioContext)();[0,.35].forEach(t=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=880;g.gain.value=.2;o.connect(g);g.connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+.2)})}catch(e){}}
 function tickTimer(){
- if(!timer.end)return;const left=timer.end-Date.now();
- if(left<=0){timer.end=null;timer.due=true;try{navigator.vibrate&&navigator.vibrate([400,200,400])}catch(e){}beep();document.title='⏰ 该起身了';if(tab==='today'&&!sheet)render();else toast('⏰ 该起身活动一下了');return}
+ if(!timer.end){if(timer.due&&timer.nag&&Date.now()>=timer.nag){timer.nag=Date.now()+300000;cue('还没有起身，动一动吧');toast('⏰ 还没起身，动一动吧')}return}const left=timer.end-Date.now();
+ if(left<=0){timer.end=null;timer.due=true;cue(S.pos&&S.pos.k==='stand'?'站了一会儿了，走一走或者坐下歇一歇':'该起身活动一下了');timer.nag=Date.now()+300000;document.title='⏰ 该起身了';if(tab==='today'&&!sheet)render();else toast('⏰ 该起身活动一下了');return}
  const el=document.getElementById('tleft');if(el){const s=Math.ceil(left/1000);el.textContent=`还有 ${pad(Math.floor(s/60))}:${pad(s%60)} 提醒起身`}}
 setInterval(()=>{tickTimer();tickPos()},1000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){tickPos();tickTimer()}});
@@ -1097,6 +1121,14 @@ document.addEventListener('click',e=>{
   case 'big':S.big=!S.big;break;
   case 'theme':S.theme=v;break;
   case 'look':S.look=v;save();location.reload();return;
+  case 'voice':S.voice=!(S.voice!==false);if(S.voice)say('语音播报已打开');break;
+  case 'awake':S.awake=!S.awake;break;
+  case 'cuetest':cue('该起身活动一下了');return;
+  case 'dadd':{const n=(document.getElementById('dn').value||'').trim(),k=document.getElementById('dk').value,gr=+document.getElementById('dg').value||0;if(!n){toast('先写吃了什么');return}
+   d=W(cur);let sv=0;if(k){const U={grain:50,veg:100,fruit:125,prot:50,milk:250,soy:100}[k];sv=gr>0?Math.max(.5,Math.round(gr/U*2)/2):1;d.diet.sv[k]=Math.round(((d.diet.sv[k]||0)+sv)*10)/10}
+   d.diet.log.push({id:'e'+Date.now(),n,k,g:gr||0,sv});toast('已记下');break}
+  case 'ddel':{d=W(cur);const i=d.diet.log.findIndex(e=>e.id===id);if(i>=0){const e=d.diet.log[i];if(e.k)d.diet.sv[e.k]=Math.max(0,Math.round(((d.diet.sv[e.k]||0)-e.sv)*10)/10);d.diet.log.splice(i,1)}break}
+  case 'hkimport':{navigator.clipboard.readText().then(t=>{const g=hkApply(t);toast(g.length?'已导入：'+g.join('、'):'剪贴板里没有认得的内容，格式如 wt:65.2,sleep:430');render()}).catch(()=>toast('没能读取剪贴板，请在弹出的“粘贴”提示里点允许'));return}
   case 'quiet':S.quiet=!S.quiet;break;
   case 'eatout':d=W(cur);d.eatOut=!d.eatOut;break;
   case 'mod':S.mods[v]=!S.mods[v];if(!S.mods.spine&&planSub==='ex')planSub='diet';break;
@@ -1134,7 +1166,7 @@ document.addEventListener('click',e=>{
   case 'txtimp':{const ta=document.getElementById('bak');try{const o=JSON.parse(ta.value);if(!o||typeof o.days!=='object')throw 0;if(!confirm('导入会覆盖当前数据，确定吗？'))return;S=Object.assign(blank(),o);migrate();save();render();toast('导入成功')}catch(_){alert('文本格式不对，请粘贴完整的备份文本')}return}
   case 'reset':if(!confirm('确定清空全部数据？建议先备份。'))return;if(!confirm('再次确认：清空后无法恢复。'))return;S=blank();break;
   default:return}
- save();render()});
+ save();render();syncWake()});
 document.addEventListener('input',e=>{
  const f=e.target.dataset.f;if(!f)return;const v=e.target.value;
  if(f==='note')W(cur).note=v;
@@ -1177,6 +1209,7 @@ document.getElementById('imp').addEventListener('change',e=>{
 
 ['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
 (function(){try{if(S.look!=='sys'){document.querySelector('meta[name=color-scheme]').content='light';for(const sh of document.styleSheets){let r;try{r=sh.cssRules}catch(e){continue}for(let i=r.length-1;i>=0;i--){if(r[i].media&&/prefers-color-scheme:\s*dark/.test(r[i].media.mediaText))sh.deleteRule(i)}}}}catch(e){}})();
+(function(){try{const h=decodeURIComponent(location.hash||'');if(h.startsWith('#hk=')){const g=hkApply(h.slice(4));history.replaceState(null,'',location.pathname);if(g.length)setTimeout(()=>toast('已导入：'+g.join('、')),400)}}catch(e){}})();
 posInit();render();
 
 </script>
